@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>الموسوعة الشاملة والمطورة لنظم التشغيل Linux</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Fira+Code:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <style>
+      :root {
+        --primary: #00d4ff;
+        --secondary: #7000ff;
+        --accent: #ff006e;
+        --dark: #0a0a0f;
+        --darker: #050508;
+        --card: rgba(255, 255, 255, 0.03);
+        --text: #e0e0e0;
+        --text-dim: #a0a0a5;
+        --success: #00ff88;
+        --warning: #ffaa00;
+        --danger: #ff3366;
+        --code-bg: #09090d;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Tajawal", sans-serif;
+        background: var(--darker);
+        color: var(--text);
+        overflow-x: hidden;
+        line-height: 1.8;
+      }
+      #canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--dark);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: linear-gradient(var(--primary), var(--secondary));
+        border-radius: 5px;
+      }
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 1.2rem 3rem;
+        background: rgba(10, 10, 15, 0.85);
+        backdrop-filter: blur(25px);
+        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.4s ease;
+      }
+      .navbar.scrolled {
+        padding: 0.6rem 3rem;
+        background: rgba(5, 5, 8, 0.98);
+        border-bottom: 1px solid rgba(112, 0, 25ff, 0.2);
+      }
+      .logo {
+        font-size: 1.6rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .nav-links {
+        display: flex;
+        gap: 2.5rem;
+        list-style: none;
+      }
+      .nav-links a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        position: relative;
+        padding: 0.5rem 0;
+        font-size: 1.05rem;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        transition: width 0.3s ease;
+      }
+      .nav-links a:hover {
+        color: var(--primary);
+      }
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 6rem 2rem 2rem 2rem;
+        overflow: hidden;
+      }
+      .hero-content {
+        text-align: center;
+        z-index: 2;
+        max-width: 1050px;
+      }
+      .hero-badge {
+        display: inline-block;
+        padding: 0.6rem 1.8rem;
+        background: rgba(0, 212, 255, 0.08);
+        border: 1px solid rgba(0, 212, 255, 0.25);
+        border-radius: 50px;
+        color: var(--primary);
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        animation: float 4s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-12px);
+        }
+      }
+      .hero h1 {
+        font-size: 3.8rem;
+        font-weight: 900;
+        line-height: 1.3;
+        margin-bottom: 1.8rem;
+        background: linear-gradient(
+          135deg,
+          #ffffff 10%,
+          var(--primary) 60%,
+          var(--secondary) 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.15));
+      }
+      .hero p {
+        font-size: 1.25rem;
+        color: var(--text-dim);
+        margin-bottom: 2.5rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 3.5rem;
+      }
+      .btn {
+        padding: 1rem 2.8rem;
+        border-radius: 50px;
+        font-family: "Tajawal", sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #fff;
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.25);
+      }
+      .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+      }
+      .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+      }
+      .btn-outline:hover {
+        background: var(--primary);
+        color: var(--darker);
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
+        transform: translateY(-3px);
+      }
+      .stats-bar {
+        display: flex;
+        justify-content: center;
+        gap: 3.5rem;
+        padding: 2.5rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        flex-wrap: wrap;
+      }
+      .stat-item {
+        text-align: center;
+        min-width: 150px;
+      }
+      .stat-number {
+        font-size: 2.8rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), #ffffff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .stat-label {
+        color: var(--text-dim);
+        font-size: 0.95rem;
+        margin-top: 0.3rem;
+      }
+      .section {
+        padding: 7rem 2rem;
+        position: relative;
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+      .section-title {
+        text-align: center;
+        margin-bottom: 5rem;
+      }
+      .section-title h2 {
+        font-size: 2.8rem;
+        font-weight: 900;
+        margin-bottom: 1.2rem;
+        background: linear-gradient(135deg, #ffffff, var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .section-title p {
+        color: var(--text-dim);
+        font-size: 1.15rem;
+        max-width: 750px;
+        margin: 0 auto;
+      }
+      .section-line {
+        width: 120px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        margin: 1.2rem auto;
+        border-radius: 10px;
+      }
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 2.5rem;
+      }
+      @media (max-width: 768px) {
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero h1 {
+          font-size: 2.5rem;
+        }
+        .navbar {
+          padding: 1rem;
+        }
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 24px;
+        padding: 3rem;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(15px);
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        transform: translateY(-8px);
+        border-color: rgba(0, 212, 255, 0.3);
+        box-shadow:
+          0 30px 60px rgba(0, 0, 0, 0.4),
+          0 0 40px rgba(0, 212, 255, 0.08);
+      }
+      .card-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        color: #fff;
+        margin-bottom: 1.8rem;
+      }
+      .card h3 {
+        font-size: 1.6rem;
+        margin-bottom: 1.2rem;
+        color: #ffffff;
+        font-weight: 800;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding-bottom: 0.6rem;
+      }
+      .card p {
+        color: var(--text-dim);
+        font-size: 1.05rem;
+        margin-bottom: 1.2rem;
+      }
+      .card h4 {
+        color: var(--primary);
+        font-size: 1.15rem;
+        margin: 1.2rem 0 0.6rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .card ul {
+        list-style: none;
+        margin-bottom: 1.5rem;
+      }
+      .card ul li {
+        position: relative;
+        padding-right: 1.5rem;
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+        color: var(--text);
+      }
+      .card ul li::before {
+        content: "•";
+        position: absolute;
+        right: 0;
+        color: var(--primary);
+        font-size: 1.4rem;
+        top: -0.2rem;
+      }
+      .card ul li strong {
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: auto;
+        padding-top: 1rem;
+      }
+      .tag {
+        padding: 0.35rem 1rem;
+        background: rgba(0, 212, 255, 0.05);
+        border-radius: 50px;
+        font-size: 0.85rem;
+        color: var(--primary);
+        border: 1px solid rgba(0, 212, 255, 0.12);
+        font-weight: 500;
+      }
+      .tag-secondary {
+        color: #bd93f9;
+        border-color: rgba(189, 147, 249, 0.2);
+        background: rgba(189, 147, 249, 0.05);
+      }
+      .info-box {
+        background: rgba(255, 170, 0, 0.05);
+        border-left: none;
+        border-right: 4px solid var(--warning);
+        padding: 1rem;
+        border-radius: 8px;
+        margin: 1rem 0;
+        font-size: 0.95rem;
+      }
+      .info-box.danger {
+        background: rgba(255, 51, 102, 0.05);
+        border-right-color: var(--danger);
+      }
+      .info-box i {
+        margin-left: 0.5rem;
+      }
+
+      .code-container {
+        position: relative;
+        margin: 1.5rem 0;
+        background: var(--code-bg);
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+      .code-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.7rem 1.4rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        font-size: 0.9rem;
+        color: var(--text-dim);
+      }
+      .code-header span {
+        font-family: "Fira Code", monospace;
+        color: #8be9fd;
+      }
+      .copy-btn {
+        background: transparent;
+        border: none;
+        color: var(--primary);
+        cursor: pointer;
+        font-family: "Tajawal", sans-serif;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: color 0.2s;
+      }
+      .copy-btn:hover {
+        color: #ffffff;
+      }
+      pre {
+        margin: 0;
+        padding: 1.4rem;
+        overflow-x: auto;
+      }
+      code {
+        font-family: "Fira Code", monospace;
+        font-size: 0.98rem;
+        color: var(--success);
+      }
+
+      .table-container {
+        overflow-x: auto;
+        margin: 1.5rem 0;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: right;
+        font-size: 0.95rem;
+      }
+      th {
+        background: rgba(112, 0, 255, 0.15);
+        color: #ffffff;
+        padding: 1rem;
+        font-weight: 700;
+        border-bottom: 2px solid rgba(112, 0, 255, 0.3);
+      }
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        color: var(--text);
+      }
+      tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+      }
+
+      .footer {
+        background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.5));
+        padding: 4rem 2rem 2rem;
+        text-align: center;
+        border-top: 1px solid rgba(0, 212, 255, 0.1);
+      }
+      .footer-logo {
+        font-size: 2.5rem;
+        font-weight: 900;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+      }
+      .footer-text {
+        color: var(--text-dim);
+        font-size: 1.1rem;
+      }
+      .footer-designer {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        font-size: 1.3rem;
+        color: var(--primary);
+        font-weight: 700;
+      }
+      .footer-designer span {
+        background: linear-gradient(135deg, var(--accent), var(--warning));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .particle {
+        position: fixed;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+
+    <nav class="navbar">
+      <div class="logo">
+        <i class="fab fa-linux"></i> الموسوعة الهندسية لـ Linux
+      </div>
+      <ul class="nav-links">
+        <li><a href="#hero">الرئيسية</a></li>
+        <li><a href="#theory">المحتوى النظري التخصصي</a></li>
+        <li><a href="#practical">الدليل العملي المعمق</a></li>
+      </ul>
+    </nav>
+
+    <header id="hero" class="hero">
+      <div class="hero-content">
+        <span class="hero-badge"
+          ><i class="fas fa-graduation-cap"></i> الهندسة الأكاديمية ونظم التشغيل
+          المتقدمة</span
+        >
+        <h1>المرجع المتكامل الخالي من النقص لمقرر نظم تشغيل Linux</h1>
+        <p>
+          تغطية برمجية ومعمارية شاملة لجميع المحاضرات (من الأولى إلى السابعة).
+          هذا القسم يضم أدق التفاصيل النظرية لبنية النواة والحسابات، بالإضافة
+          إلى صياغات الأوامر البرمجية الكاملة والمقيدة بشروط التشغيل الصارمة.
+        </p>
+        <div class="hero-buttons">
+          <a href="#theory" class="btn btn-primary"
+            ><i class="fas fa-book-open"></i> تفاصيل المحتوى النظري</a
+          >
+          <a href="#practical" class="btn btn-outline"
+            ><i class="fas fa-terminal"></i> فحص الأوامر والعملي</a
+          >
+        </div>
+        <div class="stats-bar">
+          <div class="stat-item">
+            <div class="stat-number">01 - 07</div>
+            <div class="stat-label">كامل المحاضرات الجامعية</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">تغطية الحقول والخيارات البرمجية</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">RedHat</div>
+            <div class="stat-label">التوزيعة المعتمدة بالمقرر</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section id="theory" class="section">
+      <div class="section-title">
+        <h2>أولاً: التحليل الهندسي والمحتوى النظري المكتمل</h2>
+        <div class="section-line"></div>
+        <p>
+          تفريغ وبناء شامل لكل المفاهيم الأكاديمية، الخصائص الهاردويرية، وتحليل
+          البنية التحتية لملفات الهوية والأمان للنظام.
+        </p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-layer-group"></i></div>
+          <h3>1. معمارية Linux، المزايا والمواصفات القياسية</h3>
+          <p>
+            تحليل دقيق لنظام Linux ومكوناته وهيكليته الحركية كما وردت في مستندات
+            المقرر الأساسية:
+          </p>
+          <ul>
+            <li>
+              <strong>النواة (Kernel):</strong> المكون البرمجي الأساسي المسؤول
+              عن ربط البرمجيات والتطبيقات بالمكونات المادية مباشرة؛ تتحكم
+              بالعمليات، الذاكرة، وجدولة الموارد.
+            </li>
+            <li>
+              <strong>إدارة وتعدد المستخدمين (Multi-user):</strong> آلية معقدة
+              تضمن حماية الحسابات واستقلالية البيئة والموارد لكل حساب على حدة.
+            </li>
+            <li>
+              <strong>تعدد المهام (Multitasking):</strong> تنظيم المعالجة بحيث
+              تبدو للمستخدم وكأن العمليات تشتغل بالتوازي التام بفضل الجدولة
+              السريعة.
+            </li>
+            <li>
+              <strong>الواجهات الرسومية المدعومة:</strong> يدعم بيئات سطح مكتب
+              رائدة ومتقدمة لتسهيل إدارة النظام مثل بيئة
+              <strong>KDE</strong> وبيئة <strong>GNOME</strong>.
+            </li>
+          </ul>
+          <h4>
+            المواصفات التقنية الدنيا ومتطلبات التثبيت (التوزيعة المعتمدة: Redhat
+            Enterprise):
+          </h4>
+          <ul>
+            <li>
+              <strong>المعالج:</strong> متوافق مع معمارية معالجات 32 بت و 64 بت.
+            </li>
+            <li>
+              <strong>الذاكرة العشوائية (RAM):</strong> الحد الأدنى التشغيلي
+              المجرد هو <strong>8 ميغابايت</strong>، بينما يرتفع إلى
+              <strong>256 ميغابايت</strong> لدعم كافة الأدوات والتطبيقات
+              الرسومية القياسية بشكل مستقر.
+            </li>
+            <li>
+              <strong>المساحة التخزينية (Disk Space):</strong> يتطلب التثبيت
+              القياسي الشامل مساحة لا تقل عن <strong>3.5 جيجابايت</strong>.
+            </li>
+            <li>
+              <strong>مساحة الواجهات والكتل:</strong> يتطلب
+              <strong>45 ميغابايت</strong> للواجهات البسيطة، و
+              <strong>71 ميغابايت</strong> لتضمين المجموعات البرمجية والأدوات
+              الإضافية للتطبيقات.
+            </li>
+          </ul>
+          <div class="card-tags">
+            <span class="tag">Kernel</span><span class="tag">Redhat</span
+            ><span class="tag">RAM Requirements</span
+            ><span class="tag">3.5GB</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-file-invoice"></i></div>
+          <h3>2. تشريح وهيكلية الحقول لملف المستخدمين /etc/passwd</h3>
+          <p>
+            المستند النظري الصارم لتعريف الهويات. يتم كتابة كل مستخدم في سطر
+            منفصل يتكون تماماً من <strong>7 حقول أساسية</strong> يفصل بينها
+            النقطتان الرأسيتان (<code>:</code>):
+          </p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>رقم الحقل</th>
+                  <th>اسم الحقل التخصصي</th>
+                  <th>الوظيفة والوصف الدقيق</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>الحقل 1</td>
+                  <td><strong>Username</strong></td>
+                  <td>
+                    اسم الحساب الفريد للمستخدم للولوج إلى النظام (لا يتكرر).
+                  </td>
+                </tr>
+                <tr>
+                  <td>الحقل 2</td>
+                  <td><strong>Password Encrypted</strong></td>
+                  <td>
+                    يكون عادة عبارة عن الحرف (<code>x</code>)، مما يشير إلى أن
+                    كلمة المرور مشفرة ومحفوظة بأمان داخل ملف الـ Shadow.
+                  </td>
+                </tr>
+                <tr>
+                  <td>الحقل 3</td>
+                  <td><strong>UID (User ID)</strong></td>
+                  <td>
+                    المعرف الرقمي الفريد للمستخدم (المستخدم الخارق root يمتلك
+                    دائماً UID = 0).
+                  </td>
+                </tr>
+                <tr>
+                  <td>الحقل 4</td>
+                  <td><strong>GID (Group ID)</strong></td>
+                  <td>
+                    المعرف الرقمي للمجموعة الأساسية التي ينتمي إليها الحساب بشكل
+                    تلقائي.
+                  </td>
+                </tr>
+                <tr>
+                  <td>الحقل 5</td>
+                  <td><strong>Comments / GECOS</strong></td>
+                  <td>
+                    حقل الوصف؛ يشمل معلومات اختيارية مثل الاسم الكامل، رقم
+                    المكتب، أو الهاتف.
+                  </td>
+                </tr>
+                <tr>
+                  <td>الحقل 6</td>
+                  <td><strong>Home Directory</strong></td>
+                  <td>
+                    المسار المطلق للمجلد الشخصي للمستخدم في النظام (مثل
+                    <code>/home/username</code>).
+                  </td>
+                </tr>
+                <tr>
+                  <td>الحقل 7</td>
+                  <td><strong>Login Shell</strong></td>
+                  <td>
+                    محاكي ومفسر الأوامر التلقائي الذي يتم تشغيله للمستخدم عند
+                    تسجيل الدخول (مثل <code>/bin/bash</code>).
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-tags">
+            <span class="tag">/etc/passwd</span><span class="tag">UID</span
+            ><span class="tag">GID</span><span class="tag">7 Fields</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-key"></i></div>
+          <h3>3. تشريح ملف الأمان وكلمات المرور المشفرة /etc/shadow</h3>
+          <p>
+            الملف الأمني الحرج والمقيد بصلاحيات القراءة للـ root فقط. يحتوي كل
+            سطر على <strong>9 حقول دقيقة</strong> لإدارة أمان كلمة المرور
+            وسياسات الصلاحية الزمنية:
+          </p>
+          <ul>
+            <li>
+              <strong>الحقل 1 (Username):</strong> اسم المستخدم المطابق تماماً
+              لما هو موجود في ملف passwd.
+            </li>
+            <li>
+              <strong>الحقل 2 (Encrypted Password):</strong> سلسلة طويلة مشفرة
+              تمثل كلمة المرور الفعلية (إذا حوت علامة تعجب <code>!</code> أو
+              نجمة <code>*</code>، فالحساب يكون مقفلاً).
+            </li>
+            <li>
+              <strong>الحقل 3 (Last Change):</strong> تاريخ آخر تغيير لكلمة
+              المرور، محسوباً بعدد الأيام المنقضية منذ تاريخ Epoch (1 يناير
+              1970).
+            </li>
+            <li>
+              <strong>الحقل 4 (Min Days):</strong> الحد الأدنى من الأيام التي
+              يجب أن تمر قبل أن يُسمح للمستخدم بتغيير كلمة مروره مرة أخرى.
+            </li>
+            <li>
+              <strong>الحقل 5 (Max Days):</strong> الحد الأقصى لصلاحية كلمة
+              المرور بالأيام؛ بعدها يلتزم المستخدم بتحديثها.
+            </li>
+            <li>
+              <strong>الحقل 6 (Warning Days):</strong> عدد الأيام التحذيرية التي
+              تسبق انتهاء صلاحية كلمة المرور لإشعار المستخدم بضرورة التغيير.
+            </li>
+            <li>
+              <strong>الحقل 7 (Inactive Days):</strong> فترة السماح الإضافية بعد
+              انتهاء كلمة المرور؛ إذا لم يغيرها، يتم تعطيل الحساب مؤقتاً.
+            </li>
+            <li>
+              <strong>الحقل 8 (Expiration Date):</strong> التاريخ المطلق بالأيام
+              (منذ 1970) الذي تنتهي فيه صلاحية الحساب بالكامل ويقفل تصفحه.
+            </li>
+            <li>
+              <strong>الحقل 9 (Reserved Field):</strong> حقل محجوز من قبل النظام
+              للاستخدامات والترقيات الأمنية المستقبلية.
+            </li>
+          </ul>
+          <div class="card-tags">
+            <span class="tag">/etc/shadow</span><span class="tag">Security</span
+            ><span class="tag">Hashing</span
+            ><span class="tag">Password Aging</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-users-cog"></i></div>
+          <h3>4. بنية ملف المجموعات /etc/group وهيكلية الصلاحيات</h3>
+          <p>
+            الملف المسؤول عن التحكم التشاركي والوصول الجماعي للموارد. ينقسم
+            السطر فيه إلى <strong>4 حقول محددة</strong> تماماً:
+          </p>
+          <ul>
+            <li>
+              <strong>الحقل 1 (Group Name):</strong> الاسم التعريفي الفريد
+              للمجموعة في النظام.
+            </li>
+            <li>
+              <strong>الحقل 2 (Group Password):</strong> رمز تشفير كلمة مرور
+              المجموعة (يكون غالباً <code>x</code>، وإذا تم تعيينه يسمح بالولوج
+              للمجموعة عبر أمر <code>newgrp</code>).
+            </li>
+            <li>
+              <strong>الحقل 3 (GID):</strong> المعرف الرقمي للمجموعة؛ تستخدمه
+              النواة لتحديد صلاحيات الملفات.
+            </li>
+            <li>
+              <strong>الحقل 4 (Group List / Members):</strong> قائمة بأسماء
+              المستخدمين الأعضاء في هذه المجموعة الثانوية، وتفصل بين الأسماء
+              الفاصلة العادية (<code>,</code>).
+            </li>
+          </ul>
+          <div class="info-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>قاعدة أمنية أكاديمية:</strong> لا يمكن للمستخدمين العاديين
+            تصفح أو تعديل ملفات <code>/etc/shadow</code> أو إحداث تغيير في بنية
+            الحقول إلا من خلال تملّك صلاحيات الـ <strong>root</strong> المطلقة.
+          </div>
+          <div class="card-tags">
+            <span class="tag">/etc/group</span
+            ><span class="tag">Secondary Groups</span
+            ><span class="tag">GID Allocation</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-shield-halved"></i></div>
+          <h3>5. البنية النظرية الرياضية لصلاحيات الملفات (rwx)</h3>
+          <p>
+            تتم إدارة أمان الملفات عبر مصفوفة حماية مقسمة إلى ثلاثة أصناف وثلاثة
+            مستويات أساسية:
+          </p>
+          <h4>أصناف المستخدمين المستهدفين:</h4>
+          <ul>
+            <li>
+              <strong>المالك (u - User/Owner):</strong> حساب المستخدم الذي قام
+              بإنشاء الملف أو المجلد في النظام.
+            </li>
+            <li>
+              <strong>المجموعة (g - Group):</strong> كافة الحسابات المنتمية
+              للمجموعة المالكة للملف.
+            </li>
+            <li>
+              <strong>الآخرون (o - Others):</strong> بقية المستخدمين المتواجدين
+              في النظام والذين ليسوا ملاكاً ولا أعضاء في المجموعة.
+            </li>
+          </ul>
+          <h4>قيمة ومفهوم الصلاحيات الثلاث:</h4>
+          <ul>
+            <li>
+              <strong>القراءة (r - Read):</strong> تسمح بفتح وتصفح محتويات الملف
+              أو سرد محتويات المجلد. قيمتها الرقمية الثنائية الثابتة =
+              <strong>4</strong>.
+            </li>
+            <li>
+              <strong>الكتابة (w - Write):</strong> تسمح بتعديل، مسح، أو الإضافة
+              للملف، وإنشاء وحذف ملفات داخل المجلد. قيمتها الرقمية الثابتة =
+              <strong>2</strong>.
+            </li>
+            <li>
+              <strong>التنفيذ (x - Execute):</strong> تسمح بتشغيل الملف كبرنامج
+              أو نص برمي، وتسمح بالدخول للمجلد عبر أمر cd. قيمتها الرقمية
+              الثابتة = <strong>1</strong>.
+            </li>
+          </ul>
+          <div class="card-tags">
+            <span class="tag">Octal Code</span><span class="tag">Read (4)</span
+            ><span class="tag">Write (2)</span
+            ><span class="tag">Execute (1)</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
+          <h3>6. مفسر الأوامر (Shell) وتدفق قنوات البيانات القياسية</h3>
+          <p>
+            الآلية الهندسية للتحكم بالمدخلات والمخرجات وأقنية التدفق والأخطاء
+            داخل بيئة الشل:
+          </p>
+          <ul>
+            <li>
+              <strong>مفهوم الـ Shell:</strong> هو الوسيط البرمجي التفاعلي الذي
+              يستقبل الأوامر السطرية النصية من المستخدم، يحللها للتأكد من خلوها
+              من الأخطاء القواعدية، ثم يمررها كأوامر برمجية منخفضة المستوى إلى
+              النواة (Kernel).
+            </li>
+            <li>
+              <strong>الإدخال القياسي (stdin):</strong> قناة استقبال البيانات
+              التلقائية للنظام (عادة لوحة المفاتيح). معرفها الرقمي الثابت هو
+              <strong>0</strong>.
+            </li>
+            <li>
+              <strong>الإخراج القياسي (stdout):</strong> قناة تصدير البيانات
+              الناتجة عن نجاح تنفيذ الأوامر (عادة الشاشة). معرفها الرقمي الثابت
+              هو <strong>1</strong>.
+            </li>
+            <li>
+              <strong>الخطأ القياسي (stderr):</strong> قناة مستقلة مخصصة لطباعة
+              وتوجيه رسائل الخطأ الناتجة عن الفشل البرمجي للتنفيذ. معرفها الرقمي
+              الثابت هو <strong>2</strong>.
+            </li>
+          </ul>
+          <div class="card-tags">
+            <span class="tag">stdin (0)</span><span class="tag">stdout (1)</span
+            ><span class="tag">stderr (2)</span
+            ><span class="tag">Redirection</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      id="practical"
+      class="section"
+      style="
+        background: rgba(0, 0, 0, 0.25);
+        border-top: 1px solid rgba(255, 255, 255, 0.02);
+      "
+    >
+      <div class="section-title">
+        <h2>ثانياً: الدليل العملي التطبيقي الشامل للأوامر</h2>
+        <div class="section-line"></div>
+        <p>
+          الصيغ القياسية لكافة أوامر المقرر المقيدة بشروط التشغيل البرمجي،
+          خيارات التمرير، والحلول الفورية لرسائل الأخطاء الشائعة.
+        </p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-compass"></i></div>
+          <h3>1. أوامر الاستكشاف والمسارات والمجلدات</h3>
+          <p>التحرك داخل شجرة النظام عبر الأوامر الصارمة التالية:</p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>عرض المسار الحالي</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>pwd</code></pre>
+          </div>
+          <p>
+            يطبع المسار المطلق الكامل للمجلد الذي يقف عليه المستخدم حالياً بدءاً
+            من الجَذر <code>/</code>.
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>تغيير المجلد والانتقال</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>cd /etc
+cd ..</code></pre>
+          </div>
+          <p>
+            <strong>شروط التمرير:</strong> الانتقال بالمسار المطلق (Absolute
+            Path) يتطلب البدء بالرمز <code>/</code> دائماً من الجذر مثل
+            <code>cd /etc</code>. الانتقال بالمسار النسبي (Relative Path) يتحرك
+            من النقطة الحالية دون خط مائل في البداية. الرمز <code>..</code> ينقل
+            المستخدم مرتبة واحدة للأعلى نحو المجلد الأب.
+          </p>
+
+          <div class="info-box danger">
+            <i class="fas fa-bug"></i>
+            <strong>معالجة خطأ المقرر الشهير:</strong> رسالة الخطأ
+            <code>bad directory</code> تعني برمجياً عدم إمكانية الانتقال للمجلد
+            المطلوب؛ لسببين: إما أن اسم المجلد غير موجود نهائياً، أو أن المستخدم
+            ارتكب خطأ في صياغة وقواعد كتابة المسار (خلط بين المطلق والنسبي).
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-list-ul"></i></div>
+          <h3>2. أوامر سرد واستعراض المحتويات وتفاصيلها</h3>
+          <p>
+            أمر <code>ls</code> مضافاً إليه خيارات التشغيل لفرز المجلدات
+            والخصائص الأكاديمية:
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>قائمة الملفات والخيارات</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>ls -l
+ls -a</code></pre>
+          </div>
+          <ul>
+            <li>
+              <strong>الخيار <code>-l</code> (Long Listing):</strong> يظهر
+              تفاصيل الملفات المتقدمة: نوع الملف والصلاحيات (rwx)، عدد الروابط،
+              اسم المالك، اسم المجموعة المالكة، حجم الملف بالبايت، وتاريخ ووقت
+              آخر تعديل.
+            </li>
+            <li>
+              <strong>الخيار <code>-a</code> (All Files):</strong> يظهر كافة
+              الملفات بدون استثناء، بما في ذلك الملفات والمجلدات المخفية والتي
+              تبدأ أسماؤها بنقطة (<code>.</code>).
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-file-code"></i></div>
+          <h3>3. المعالجة التطبيقية للملفات النصية (cat والتوجيه)</h3>
+          <p>
+            استخدامات أمر <code>cat</code> المتقدمة في دمج وتوجيه وإنشاء المحتوى
+            النصي الفوري:
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>استخدامات الأمر cat المتعددة</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>cat file1.txt
+cat > newfile.txt
+cat file1.txt file2.txt > combined.txt
+cat file1.txt >> existingfile.txt</code></pre>
+          </div>
+          <h4>القواعد البرمجية الصارمة للتوجيه المذكورة في المحاضرات:</h4>
+          <ul>
+            <li>
+              <code>cat file1.txt</code> لطباعة وعرض محتويات الملف مباشرة على
+              الشاشة (stdout).
+            </li>
+            <li>
+              <code>cat > newfile.txt</code> ينشئ ملفاً جديداً ويفتح السطر
+              للكتابة الحية من لوحة المفاتيح. للخروج وحفظ النص، يضغط المستخدم
+              على <strong>Ctrl + D</strong> أو <strong>Ctrl + Q</strong> (حسب
+              إعدادات النظام المحاكي).
+            </li>
+            <li>
+              الرمز <code>></code> يوجه البيانات لملف جديد، وإذا كان الملف
+              موجوداً فإنه يقوم بمسح محتوياته السابقة بالكامل (Overwrite).
+            </li>
+            <li>
+              الرمز <code>>></code> يقوم بإلحاق وإضافة النص الموجه الجديد إلى
+              نهاية الملف القائم دون تدمير أو مسح محتوياته القديمة.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-user-shield"></i></div>
+          <h3>4. أوامر تعديل صلاحيات الأمان برمزيتها وأرقامها</h3>
+          <p>
+            تطبيق أمر <code>chmod</code> لتعديل مصفوفة الحماية بالأسلوبين الرقمي
+            والرمزي:
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>تطبيق chmod بالخيارات</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>chmod 755 script.sh
+chmod u+x,g-w document.txt
+chmod -R 777 /shared_folder</code></pre>
+          </div>
+          <h4>تحليل الصيغة المعتمدة في المقرر:</h4>
+          <ul>
+            <li>
+              <strong>النظام الرقمي (Octal):</strong> الأمر
+              <code>chmod 755</code> يعني منح المالك صلاحية كاملة (4+2+1=7)،
+              ومنح المجموعة صلاحية قراءة وتنفيذ (4+1=5)، ومنح الآخرين صلاحية
+              قراءة وتنفيذ (4+1=5).
+            </li>
+            <li>
+              <strong>النظام الرمزي (Symbolic):</strong> الصياغة
+              <code>u+x</code> تعني إضافة صلاحية التنفيذ للمالك، و
+              <code>g-w</code> تعني سحب وإلغاء صلاحية الكتابة من المجموعة.
+            </li>
+            <li>
+              <strong
+                >الخيار التكراري الهام <code>-R</code> (Recursive):</strong
+              >
+              يقوم بتغيير صلاحيات المجلد المستهدف بشكل تنازلي ليشمل المجلد نفسه
+              وكافة الملفات والمجلدات الفرعية المتفرعة منه بالداخل.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-user-plus"></i></div>
+          <h3>5. أوامر إدارة وحذف حسابات المستخدمين بالخيارات</h3>
+          <p>
+            إدارة دورة حياة الحسابات في النظام (تتطلب صلاحية المسؤول الإداري
+            الأعلى الـ root) عبر المسار الإداري القياسي <code>/usr/sbin/</code>:
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>إنشاء وحذف المستخدمين</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>/usr/sbin/useradd engineering_user
+/usr/sbin/userdel -r engineering_user
+passwd engineering_user</code></pre>
+          </div>
+          <ul>
+            <li>
+              <strong><code>/usr/sbin/useradd</code>:</strong> يقوم بإنشاء حساب
+              مستخدم جديد كلياً في النظام، وبناء سطر خاص به في ملفات الهوية
+              والمجلدات الشخصية تلقائياً.
+            </li>
+            <li>
+              <strong><code>/usr/sbin/userdel -r</code>:</strong> حذف حساب
+              المستخدم. <strong>الشرط الأكاديمي الحرج:</strong> استخدام الخيار
+              <code>-r</code> إلزامي لإجبار النظام على حذف المجلد الشخصي
+              للمستخدم (Home Directory) ومجلد بريده الإلكتروني بالكامل من القرص؛
+              وإلا بقي المجلد معلقاً في النظام بدون مالك.
+            </li>
+            <li>
+              <strong><code>passwd [username]</code>:</strong> تعيين أو تحديث
+              كلمة المرور للحساب. عند تنفيذه، يطلب الشل إدخال الكلمة مرتين بشكل
+              مخفي تماماً لأسباب أمنية لمنع المتطفلين من معرفة عدد أحرفها.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-users"></i></div>
+          <h3>6. الأوامر البرمجية الكاملة لإدارة وتعديل المجموعات</h3>
+          <p>
+            التحكم الكامل بإنشاء، هيكلة، وحذف المجموعات وإلحاق المستخدمين بها
+            عملياً:
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>صياغات أوامر المجموعات</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>/usr/sbin/groupadd network_group
+/usr/sbin/groupmod -n new_network_group network_group
+/usr/sbin/groupdel new_network_group
+gpasswd -a engineering_user new_network_group
+gpasswd -d engineering_user new_network_group</code></pre>
+          </div>
+          <ul>
+            <li>
+              <strong><code>groupadd</code>:</strong> لإنشاء مجموعة أمان جديدة
+              فارغة داخل ملف <code>/etc/group</code>.
+            </li>
+            <li>
+              <strong
+                ><code>groupmod -n [الاسم_الجديد] [الاسم_القديم]</code>:</strong
+              >
+              الخيار <code>-n</code> مخصص لتعديل وإعادة تسمية المجموعة الحالية
+              دون التأثير على الـ GID الرقمي الخاص بها.
+            </li>
+            <li>
+              <strong><code>groupdel</code>:</strong> حذف مجموعة من النظام.
+              <strong>شرط التشغيل:</strong> يفشل هذا الأمر إذا كانت المجموعة
+              المستهدفة هي المجموعة الأساسية (Primary Group) لمستخدم لا يزال
+              نشطاً في النظام.
+            </li>
+            <li>
+              <strong>أمر التحكم بالعضوية <code>gpasswd</code>:</strong> الخيار
+              <code>-a</code> يقوم بإضافة وإسناد مستخدم معين إلى المجموعة
+              كمجموعة ثانوية، بينما الخيار <code>-d</code> يقوم بحذف وإخراج
+              المستخدم المحدد من عضوية هذه المجموعة نهائياً.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-icon"><i class="fas fa-filter"></i></div>
+          <h3>7. الفلترة المتقدمة عبر الأنابيب (Pipeline) وأوامر النصوص</h3>
+          <p>
+            الربط المعقد بين مخرجات ومدخلات البرامج لتصفية نصوص السجلات الكبيرة
+            فوريّاً:
+          </p>
+
+          <div class="code-container">
+            <div class="code-header">
+              <span>دمج الأوامر والترتيب والفلترة</span
+              ><button class="copy-btn" onclick="copyCode(this)">
+                <i class="fas fa-copy"></i> نسخ
+              </button>
+            </div>
+            <pre><code>cat /etc/passwd | grep "root"
+ls -l /etc | sort
+ls -l /bin | grep "sh" | sort</code></pre>
+          </div>
+          <h4>شرح وتقسيم أدوات التصفية الواردة بالملفات:</h4>
+          <ul>
+            <li>
+              <strong>الرمز <code>|</code> (Pipeline / الأنبوب):</strong> يقوم
+              بنقل مخرجات الإخراج القياسي (stdout) للأمر الأول الأيسر ليصبح
+              مدخلاً قياسياً (stdin) للأمر التالي الأيمن بشكل فوري دون الحاجة
+              لإنشاء ملفات وسيطة على القرص.
+            </li>
+            <li>
+              <strong>أمر <code>grep</code>:</strong> يقوم بفحص الأسطر الممررة
+              إليه طبقة طبقة، ولا يطبع على الشاشة إلا الأسطر التي تحتوي بدقة على
+              الكلمة المفتاحية المستهدفة (مثل تصفية سطور الـ root).
+            </li>
+            <li>
+              <strong>أمر <code>sort</code>:</strong> يقوم باستقبال البيانات
+              النصية وإعادة ترتيب أسطرها أبجدياً أو رقمياً لتسهيل القراءة
+              والمراقبة الإدارية.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-logo"><i class="fab fa-linux"></i> Linux OS</div>
+      <p class="footer-text">منصة تعليمية متكاملة لنظم التشغيل Linux</p>
+      <div class="footer-designer"><span>Designed by Hamza Omar</span></div>
+      <p style="color: var(--text-dim); margin-top: 1rem; font-size: 0.9rem">
+        <i class="fas fa-copyright"></i> 2026 جميع الحقوق محفوظة
+      </p>
+    </footer>
+
+    <script>
+      // إعداد خلفية تفاعلية ثلاثية الأبعاد متحركة مع حركة الفأرة والتمرير باستخدام Three.js
+      const container = document.getElementById("canvas-container");
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000,
+      );
+      const renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
+
+      const geometry = new THREE.BufferGeometry();
+      const vertices = [];
+      // توليد 2000 نقطة ضوئية لخلق عمق بصري احترافي
+      for (let i = 0; i < 2000; i++) {
+        vertices.push(THREE.MathUtils.randFloatSpread(2000));
+        vertices.push(THREE.MathUtils.randFloatSpread(2000));
+        vertices.push(THREE.MathUtils.randFloatSpread(2000));
+      }
+      geometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(vertices, 3),
+      );
+      const material = new THREE.PointsMaterial({
+        color: 0x00d4ff,
+        size: 2.5,
+        transparent: true,
+        opacity: 0.5,
+      });
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+      camera.position.z = 600;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        points.rotation.x += 0.0004;
+        points.rotation.y += 0.0006;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      // تحويل شكل شريط التنقل عند تمرير الشاشة للأسفل
+      window.addEventListener("scroll", () => {
+        const navbar = document.querySelector(".navbar");
+        if (window.scrollY > 60) {
+          navbar.classList.add("scrolled");
+        } else {
+          navbar.classList.remove("scrolled");
+        }
+      });
+
+      // وظيفة نسخ الأوامر البرمجية بدقة وبدون تداخل نصي مع حماية المحتوى
+      function copyCode(btn) {
+        const codeBlock =
+          btn.parentElement.nextElementSibling.querySelector("code");
+        const text = codeBlock.innerText;
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML =
+              '<i class="fas fa-check" style="color: var(--success)"></i> تم النسخ بنجاح';
+            setTimeout(() => {
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("فشل النسخ: ", err);
+          });
+      }
+
+      // الانتقال الانسيابي الهادئ بين أقسام الصفحة المختلفة عند النقر
+      document
+        .querySelectorAll(".nav-links a, .hero-buttons a")
+        .forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute("href");
+            if (targetId.startsWith("#")) {
+              const target = document.querySelector(targetId);
+              if (target) {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }
+          });
+        });
+
+      // توليد تأثير جزيئات ضوئية متلاشية (Particle Sparkles) عند النقر بالفأرة في أي مكان على الصفحة
+      document.addEventListener("click", (e) => {
+        for (let i = 0; i < 6; i++) {
+          const particle = document.createElement("div");
+          particle.className = "particle";
+          particle.style.left = e.clientX + "px";
+          particle.style.top = e.clientY + "px";
+          particle.style.background =
+            Math.random() > 0.5 ? "var(--primary)" : "var(--secondary)";
+          document.body.appendChild(particle);
+          gsap.to(particle, {
+            x: (Math.random() - 0.5) * 120,
+            y: (Math.random() - 0.5) * 120,
+            opacity: 0,
+            scale: 0,
+            duration: 1.2,
+            ease: "power3.out",
+            onComplete: () => particle.remove(),
+          });
+        }
+      });
+
+      // تفعيل تأثيرات التحريك المتقدمة لعناصر الموقع (Cards) عند التمرير لأسفل عبر مكتبة GSAP التفاعلية
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.utils.toArray(".card").forEach((card) => {
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: "top 88%",
+            toggleActions: "play none none none",
+          },
+          opacity: 0,
+          y: 40,
+          duration: 0.7,
+          ease: "power2.out",
+        });
+      });
+    </script>
+  </body>
+</html>
