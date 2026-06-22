@@ -3,483 +3,569 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>الموسوعة الشاملة والمطورة لنظم التشغيل Linux</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Fira+Code:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <title>نظم التشغيل 2 — مراجعة الامتحان النهائي</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Fira+Code:wght@400;500&display=swap");
+
       :root {
-        --primary: #00d4ff;
-        --secondary: #7000ff;
-        --accent: #ff006e;
-        --dark: #0a0a0f;
-        --darker: #050508;
-        --card: rgba(255, 255, 255, 0.03);
-        --text: #e0e0e0;
-        --text-dim: #a0a0a5;
-        --success: #00ff88;
-        --warning: #ffaa00;
-        --danger: #ff3366;
-        --code-bg: #09090d;
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface2: #1f2937;
+        --border: #30363d;
+        --green: #39d353;
+        --green-dim: #1a4731;
+        --blue: #58a6ff;
+        --blue-dim: #0d2b57;
+        --yellow: #f0c040;
+        --yellow-dim: #3d2e00;
+        --red: #f85149;
+        --red-dim: #3d0e0a;
+        --purple: #bc8cff;
+        --purple-dim: #2d1a4d;
+        --text: #e6edf3;
+        --text-dim: #8b949e;
+        --code-bg: #0d1117;
       }
+
       * {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        box-sizing: border-box;
       }
+
       body {
-        font-family: "Tajawal", sans-serif;
-        background: var(--darker);
+        background: var(--bg);
         color: var(--text);
-        overflow-x: hidden;
-        line-height: 1.8;
+        font-family: "Cairo", sans-serif;
+        line-height: 1.7;
       }
-      #canvas-container {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        pointer-events: none;
-      }
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: var(--dark);
-      }
-      ::-webkit-scrollbar-thumb {
-        background: linear-gradient(var(--primary), var(--secondary));
-        border-radius: 5px;
-      }
-      .navbar {
-        position: fixed;
-        top: 0;
-        width: 100%;
-        padding: 1.2rem 3rem;
-        background: rgba(10, 10, 15, 0.85);
-        backdrop-filter: blur(25px);
-        border-bottom: 1px solid rgba(0, 212, 255, 0.15);
-        z-index: 1000;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: all 0.4s ease;
-      }
-      .navbar.scrolled {
-        padding: 0.6rem 3rem;
-        background: rgba(5, 5, 8, 0.98);
-        border-bottom: 1px solid rgba(112, 0, 25ff, 0.2);
-      }
-      .logo {
-        font-size: 1.6rem;
-        font-weight: 900;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-      }
-      .nav-links {
-        display: flex;
-        gap: 2.5rem;
-        list-style: none;
-      }
-      .nav-links a {
-        color: var(--text-dim);
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        position: relative;
-        padding: 0.5rem 0;
-        font-size: 1.05rem;
-      }
-      .nav-links a::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        width: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        transition: width 0.3s ease;
-      }
-      .nav-links a:hover {
-        color: var(--primary);
-      }
-      .nav-links a:hover::after {
-        width: 100%;
-      }
-      .hero {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: 6rem 2rem 2rem 2rem;
-        overflow: hidden;
-      }
-      .hero-content {
-        text-align: center;
-        z-index: 2;
-        max-width: 1050px;
-      }
-      .hero-badge {
-        display: inline-block;
-        padding: 0.6rem 1.8rem;
-        background: rgba(0, 212, 255, 0.08);
-        border: 1px solid rgba(0, 212, 255, 0.25);
-        border-radius: 50px;
-        color: var(--primary);
-        font-size: 0.95rem;
-        font-weight: 700;
-        margin-bottom: 2rem;
-        animation: float 4s ease-in-out infinite;
-      }
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0);
-        }
-        50% {
-          transform: translateY(-12px);
-        }
-      }
-      .hero h1 {
-        font-size: 3.8rem;
-        font-weight: 900;
-        line-height: 1.3;
-        margin-bottom: 1.8rem;
+
+      /* HEADER */
+      header {
         background: linear-gradient(
           135deg,
-          #ffffff 10%,
-          var(--primary) 60%,
-          var(--secondary) 100%
+          #0d1117 0%,
+          #1a0a2e 50%,
+          #0d1117 100%
+        );
+        border-bottom: 1px solid var(--purple);
+        padding: 30px 20px;
+        text-align: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        backdrop-filter: blur(10px);
+      }
+
+      header h1 {
+        font-size: clamp(1.4rem, 4vw, 2.2rem);
+        font-weight: 900;
+        background: linear-gradient(
+          90deg,
+          var(--green),
+          var(--blue),
+          var(--purple)
         );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.15));
+        background-clip: text;
       }
-      .hero p {
-        font-size: 1.25rem;
-        color: var(--text-dim);
-        margin-bottom: 2.5rem;
-        max-width: 800px;
-        margin-left: auto;
-        margin-right: auto;
+
+      .timer-bar {
+        background: linear-gradient(90deg, var(--red), var(--yellow));
+        color: #000;
+        font-weight: 900;
+        font-size: 1rem;
+        padding: 6px 20px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-top: 8px;
+        animation: pulse 2s infinite;
       }
-      .hero-buttons {
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      /* NAV TABS */
+      .nav-tabs {
         display: flex;
-        gap: 1.5rem;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-bottom: 3.5rem;
+        gap: 6px;
+        overflow-x: auto;
+        padding: 12px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        scrollbar-width: none;
+        position: sticky;
+        top: 100px;
+        z-index: 99;
       }
-      .btn {
-        padding: 1rem 2.8rem;
-        border-radius: 50px;
-        font-family: "Tajawal", sans-serif;
+      .nav-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        padding: 7px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: "Cairo", sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: all 0.2s;
+      }
+      .tab-btn:hover,
+      .tab-btn.active {
+        background: var(--purple-dim);
+        border-color: var(--purple);
+        color: var(--purple);
+      }
+
+      /* MAIN LAYOUT */
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px 16px 60px;
+      }
+
+      .section {
+        display: none;
+        animation: fadeIn 0.3s ease;
+      }
+      .section.active {
+        display: block;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      /* CARDS */
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .card-title {
         font-size: 1.1rem;
         font-weight: 700;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        border: none;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.7rem;
-      }
-      .btn-primary {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: #fff;
-        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.25);
-      }
-      .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
-      }
-      .btn-outline {
-        background: transparent;
-        color: var(--primary);
-        border: 2px solid var(--primary);
-      }
-      .btn-outline:hover {
-        background: var(--primary);
-        color: var(--darker);
-        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
-        transform: translateY(-3px);
-      }
-      .stats-bar {
-        display: flex;
-        justify-content: center;
-        gap: 3.5rem;
-        padding: 2.5rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        flex-wrap: wrap;
-      }
-      .stat-item {
-        text-align: center;
-        min-width: 150px;
-      }
-      .stat-number {
-        font-size: 2.8rem;
-        font-weight: 900;
-        background: linear-gradient(135deg, var(--primary), #ffffff);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .stat-label {
-        color: var(--text-dim);
-        font-size: 0.95rem;
-        margin-top: 0.3rem;
-      }
-      .section {
-        padding: 7rem 2rem;
-        position: relative;
-        max-width: 1440px;
-        margin: 0 auto;
-      }
-      .section-title {
-        text-align: center;
-        margin-bottom: 5rem;
-      }
-      .section-title h2 {
-        font-size: 2.8rem;
-        font-weight: 900;
-        margin-bottom: 1.2rem;
-        background: linear-gradient(135deg, #ffffff, var(--primary));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-      }
-      .section-title p {
-        color: var(--text-dim);
-        font-size: 1.15rem;
-        max-width: 750px;
-        margin: 0 auto;
-      }
-      .section-line {
-        width: 120px;
-        height: 4px;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-        margin: 1.2rem auto;
-        border-radius: 10px;
-      }
-      .cards-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-        gap: 2.5rem;
-      }
-      @media (max-width: 768px) {
-        .cards-grid {
-          grid-template-columns: 1fr;
-        }
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-        .navbar {
-          padding: 1rem;
-        }
-      }
-      .card {
-        background: var(--card);
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: 24px;
-        padding: 3rem;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(15px);
-        display: flex;
-        flex-direction: column;
-      }
-      .card:hover {
-        transform: translateY(-8px);
-        border-color: rgba(0, 212, 255, 0.3);
-        box-shadow:
-          0 30px 60px rgba(0, 0, 0, 0.4),
-          0 0 40px rgba(0, 212, 255, 0.08);
-      }
-      .card-icon {
-        width: 65px;
-        height: 65px;
-        border-radius: 18px;
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        margin-bottom: 14px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-        color: #fff;
-        margin-bottom: 1.8rem;
-      }
-      .card h3 {
-        font-size: 1.6rem;
-        margin-bottom: 1.2rem;
-        color: #ffffff;
-        font-weight: 800;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        padding-bottom: 0.6rem;
-      }
-      .card p {
-        color: var(--text-dim);
-        font-size: 1.05rem;
-        margin-bottom: 1.2rem;
-      }
-      .card h4 {
-        color: var(--primary);
-        font-size: 1.15rem;
-        margin: 1.2rem 0 0.6rem 0;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .card ul {
-        list-style: none;
-        margin-bottom: 1.5rem;
-      }
-      .card ul li {
-        position: relative;
-        padding-right: 1.5rem;
-        margin-bottom: 0.8rem;
-        font-size: 1rem;
-        color: var(--text);
-      }
-      .card ul li::before {
-        content: "•";
-        position: absolute;
-        right: 0;
-        color: var(--primary);
-        font-size: 1.4rem;
-        top: -0.2rem;
-      }
-      .card ul li strong {
-        color: #ffffff;
-        font-weight: 600;
-      }
-      .card-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.6rem;
-        margin-top: auto;
-        padding-top: 1rem;
-      }
-      .tag {
-        padding: 0.35rem 1rem;
-        background: rgba(0, 212, 255, 0.05);
-        border-radius: 50px;
-        font-size: 0.85rem;
-        color: var(--primary);
-        border: 1px solid rgba(0, 212, 255, 0.12);
-        font-weight: 500;
-      }
-      .tag-secondary {
-        color: #bd93f9;
-        border-color: rgba(189, 147, 249, 0.2);
-        background: rgba(189, 147, 249, 0.05);
-      }
-      .info-box {
-        background: rgba(255, 170, 0, 0.05);
-        border-left: none;
-        border-right: 4px solid var(--warning);
-        padding: 1rem;
-        border-radius: 8px;
-        margin: 1rem 0;
-        font-size: 0.95rem;
-      }
-      .info-box.danger {
-        background: rgba(255, 51, 102, 0.05);
-        border-right-color: var(--danger);
-      }
-      .info-box i {
-        margin-left: 0.5rem;
+        gap: 8px;
       }
 
-      .code-container {
-        position: relative;
-        margin: 1.5rem 0;
+      .badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      .badge-green {
+        background: var(--green-dim);
+        color: var(--green);
+        border: 1px solid var(--green);
+      }
+      .badge-blue {
+        background: var(--blue-dim);
+        color: var(--blue);
+        border: 1px solid var(--blue);
+      }
+      .badge-yellow {
+        background: var(--yellow-dim);
+        color: var(--yellow);
+        border: 1px solid var(--yellow);
+      }
+      .badge-red {
+        background: var(--red-dim);
+        color: var(--red);
+        border: 1px solid var(--red);
+      }
+      .badge-purple {
+        background: var(--purple-dim);
+        color: var(--purple);
+        border: 1px solid var(--purple);
+      }
+
+      /* CODE */
+      code,
+      .cmd {
+        font-family: "Fira Code", monospace;
         background: var(--code-bg);
-        border-radius: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.06);
-        overflow: hidden;
-      }
-      .code-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.7rem 1.4rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        font-size: 0.9rem;
-        color: var(--text-dim);
-      }
-      .code-header span {
-        font-family: "Fira Code", monospace;
-        color: #8be9fd;
-      }
-      .copy-btn {
-        background: transparent;
-        border: none;
-        color: var(--primary);
-        cursor: pointer;
-        font-family: "Tajawal", sans-serif;
-        font-size: 0.85rem;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-        transition: color 0.2s;
-      }
-      .copy-btn:hover {
-        color: #ffffff;
-      }
-      pre {
-        margin: 0;
-        padding: 1.4rem;
-        overflow-x: auto;
-      }
-      code {
-        font-family: "Fira Code", monospace;
-        font-size: 0.98rem;
-        color: var(--success);
+        border: 1px solid var(--border);
+        padding: 2px 8px;
+        border-radius: 5px;
+        color: var(--green);
+        font-size: 0.88rem;
+        direction: ltr;
+        display: inline-block;
       }
 
-      .table-container {
+      .code-block {
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-right: 3px solid var(--green);
+        border-radius: 8px;
+        padding: 14px 16px;
+        font-family: "Fira Code", monospace;
+        font-size: 0.85rem;
+        color: var(--green);
+        direction: ltr;
         overflow-x: auto;
-        margin: 1.5rem 0;
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        margin: 10px 0;
+        line-height: 1.8;
+        white-space: pre;
       }
+
+      .code-block.blue {
+        border-right-color: var(--blue);
+        color: var(--blue);
+      }
+      .code-block.yellow {
+        border-right-color: var(--yellow);
+        color: var(--yellow);
+      }
+      .code-block.purple {
+        border-right-color: var(--purple);
+        color: var(--purple);
+      }
+
+      /* TABLES */
       table {
         width: 100%;
         border-collapse: collapse;
-        text-align: right;
-        font-size: 0.95rem;
+        font-size: 0.88rem;
+        margin: 10px 0;
       }
       th {
-        background: rgba(112, 0, 255, 0.15);
-        color: #ffffff;
-        padding: 1rem;
+        background: var(--surface2);
+        color: var(--purple);
+        padding: 10px 12px;
+        text-align: right;
         font-weight: 700;
-        border-bottom: 2px solid rgba(112, 0, 255, 0.3);
+        border-bottom: 2px solid var(--purple);
       }
       td {
-        padding: 1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-        color: var(--text);
+        padding: 9px 12px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
       }
-      tr:hover {
-        background: rgba(255, 255, 255, 0.02);
+      tr:hover td {
+        background: var(--surface2);
+      }
+      td:first-child {
+        font-family: "Fira Code", monospace;
+        color: var(--green);
+        direction: ltr;
+        text-align: left;
+      }
+
+      /* GRID */
+      .grid2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .grid3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      @media (max-width: 700px) {
+        .grid2,
+        .grid3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* HIGHLIGHT BOXES */
+      .highlight {
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin: 10px 0;
+        border-right: 4px solid;
+      }
+      .hl-green {
+        background: var(--green-dim);
+        border-color: var(--green);
+      }
+      .hl-blue {
+        background: var(--blue-dim);
+        border-color: var(--blue);
+      }
+      .hl-yellow {
+        background: var(--yellow-dim);
+        border-color: var(--yellow);
+      }
+      .hl-red {
+        background: var(--red-dim);
+        border-color: var(--red);
+      }
+      .hl-purple {
+        background: var(--purple-dim);
+        border-color: var(--purple);
+      }
+
+      /* CHMOD VISUAL */
+      .chmod-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin: 12px 0;
+      }
+      .chmod-cell {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+      }
+      .chmod-cell .num {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: var(--yellow);
+      }
+      .chmod-cell .label {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+
+      .perm-row {
+        display: grid;
+        grid-template-columns: 80px repeat(3, 1fr);
+        gap: 6px;
+        margin: 6px 0;
+        align-items: center;
+      }
+      .perm-cell {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 8px;
+        text-align: center;
+        font-family: "Fira Code", monospace;
+      }
+      .perm-cell.on {
+        background: var(--green-dim);
+        border-color: var(--green);
+        color: var(--green);
+        font-weight: 700;
+      }
+      .perm-cell.off {
+        color: var(--text-dim);
+      }
+
+      /* PASSWD FIELDS */
+      .passwd-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .passwd-field {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        padding: 8px 12px;
+      }
+      .passwd-num {
+        background: var(--purple-dim);
+        color: var(--purple);
+        border: 1px solid var(--purple);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .passwd-key {
+        color: var(--yellow);
+        font-weight: 600;
+        font-family: "Fira Code", monospace;
+        font-size: 0.82rem;
+      }
+      .passwd-val {
+        color: var(--text-dim);
+        font-size: 0.82rem;
+      }
+
+      /* QUIZ */
+      .quiz-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 14px;
+      }
+      .quiz-q {
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: var(--blue);
+      }
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .quiz-opt {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-family: "Cairo", sans-serif;
+        font-size: 0.9rem;
+        text-align: right;
+      }
+      .quiz-opt:hover {
+        border-color: var(--blue);
+        background: var(--blue-dim);
+      }
+      .quiz-opt.correct {
+        background: var(--green-dim);
+        border-color: var(--green);
+        color: var(--green);
+      }
+      .quiz-opt.wrong {
+        background: var(--red-dim);
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .quiz-explain {
+        display: none;
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--blue-dim);
+        border-radius: 8px;
+        font-size: 0.87rem;
+        border-right: 3px solid var(--blue);
+      }
+
+      /* PROGRESS */
+      .progress-section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 16px;
+      }
+      .progress-bar-wrap {
+        background: var(--surface2);
+        border-radius: 10px;
+        height: 10px;
+        margin: 8px 0;
+        overflow: hidden;
+      }
+      .progress-bar {
+        height: 100%;
+        border-radius: 10px;
+        background: linear-gradient(90deg, var(--green), var(--blue));
+        transition: width 0.5s;
+      }
+
+      h3 {
+        color: var(--blue);
+        margin: 16px 0 8px;
+        font-size: 1rem;
+      }
+      p {
+        color: var(--text);
+        margin: 6px 0;
+        font-size: 0.9rem;
+      }
+      li {
+        margin: 4px 0;
+        font-size: 0.9rem;
+      }
+      ul {
+        padding-right: 20px;
+      }
+
+      .emoji {
+        font-size: 1.2em;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .section-header h2 {
+        font-size: 1.4rem;
+        font-weight: 900;
+      }
+
+      /* UMASK CALCULATOR */
+      .umask-calc {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 12px 0;
+      }
+      .umask-box {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+      }
+      .umask-box .big {
+        font-size: 2rem;
+        font-weight: 900;
+        font-family: "Fira Code", monospace;
+      }
+      .umask-box .small {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+      }
+
+      .search-box {
+        width: 100%;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        color: var(--text);
+        font-family: "Cairo", sans-serif;
+        font-size: 0.95rem;
+        margin-bottom: 14px;
+        outline: none;
+        transition: border 0.2s;
+      }
+      .search-box:focus {
+        border-color: var(--blue);
+      }
+      .search-box::placeholder {
+        color: var(--text-dim);
       }
 
       .footer {
@@ -513,858 +599,2079 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
       }
-      .particle {
-        position: fixed;
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
+      .cmd-item {
+        display: flex;
+        gap: 12px;
+        padding: 10px;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        margin-bottom: 6px;
+        align-items: flex-start;
+      }
+      .cmd-item code {
+        flex-shrink: 0;
+        font-size: 0.82rem;
+      }
+      .cmd-item p {
+        margin: 0;
+        font-size: 0.88rem;
+        color: var(--text-dim);
+      }
+
+      .star {
+        color: var(--yellow);
       }
     </style>
   </head>
   <body>
-    <div id="canvas-container"></div>
-
-    <nav class="navbar">
-      <div class="logo">
-        <i class="fab fa-linux"></i> الموسوعة الهندسية لـ Linux
-      </div>
-      <ul class="nav-links">
-        <li><a href="#hero">الرئيسية</a></li>
-        <li><a href="#theory">المحتوى النظري التخصصي</a></li>
-        <li><a href="#practical">الدليل العملي المعمق</a></li>
-      </ul>
-    </nav>
-
-    <header id="hero" class="hero">
-      <div class="hero-content">
-        <span class="hero-badge"
-          ><i class="fas fa-graduation-cap"></i> الهندسة الأكاديمية ونظم التشغيل
-          المتقدمة</span
-        >
-        <h1>المرجع المتكامل الخالي من النقص لمقرر نظم تشغيل Linux</h1>
-        <p>
-          تغطية برمجية ومعمارية شاملة لجميع المحاضرات (من الأولى إلى السابعة).
-          هذا القسم يضم أدق التفاصيل النظرية لبنية النواة والحسابات، بالإضافة
-          إلى صياغات الأوامر البرمجية الكاملة والمقيدة بشروط التشغيل الصارمة.
-        </p>
-        <div class="hero-buttons">
-          <a href="#theory" class="btn btn-primary"
-            ><i class="fas fa-book-open"></i> تفاصيل المحتوى النظري</a
-          >
-          <a href="#practical" class="btn btn-outline"
-            ><i class="fas fa-terminal"></i> فحص الأوامر والعملي</a
-          >
-        </div>
-        <div class="stats-bar">
-          <div class="stat-item">
-            <div class="stat-number">01 - 07</div>
-            <div class="stat-label">كامل المحاضرات الجامعية</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">100%</div>
-            <div class="stat-label">تغطية الحقول والخيارات البرمجية</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-number">RedHat</div>
-            <div class="stat-label">التوزيعة المعتمدة بالمقرر</div>
-          </div>
-        </div>
-      </div>
+    <header>
+      <h1>🐧 نظم التشغيل 2 — مراجعة شاملة للامتحان</h1>
+      <div class="timer-bar">⏰ الامتحان بعد 2.5 ساعة — ركّز وراجع بسرعة!</div>
     </header>
 
-    <section id="theory" class="section">
-      <div class="section-title">
-        <h2>أولاً: التحليل الهندسي والمحتوى النظري المكتمل</h2>
-        <div class="section-line"></div>
-        <p>
-          تفريغ وبناء شامل لكل المفاهيم الأكاديمية، الخصائص الهاردويرية، وتحليل
-          البنية التحتية لملفات الهوية والأمان للنظام.
-        </p>
-      </div>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="showTab('overview')">
+        🗺️ خريطة المقرر
+      </button>
+      <button class="tab-btn" onclick="showTab('basics')">
+        💻 م1 — أساسيات
+      </button>
+      <button class="tab-btn" onclick="showTab('files')">
+        📁 م2-3 — الملفات
+      </button>
+      <button class="tab-btn" onclick="showTab('chmod')">🔐 م4 — chmod</button>
+      <button class="tab-btn" onclick="showTab('advanced')">
+        🔍 م5 — أوامر متقدمة
+      </button>
+      <button class="tab-btn" onclick="showTab('passwd')">
+        👤 م6-7 — passwd/shadow
+      </button>
+      <button class="tab-btn" onclick="showTab('users')">
+        👥 م8 — المستخدمون
+      </button>
+      <button class="tab-btn" onclick="showTab('commands')">
+        📋 كل الأوامر
+      </button>
+      <button class="tab-btn" onclick="showTab('quiz')">🧠 اختبر نفسك</button>
+    </div>
 
-      <div class="cards-grid">
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-layer-group"></i></div>
-          <h3>1. معمارية Linux، المزايا والمواصفات القياسية</h3>
-          <p>
-            تحليل دقيق لنظام Linux ومكوناته وهيكليته الحركية كما وردت في مستندات
-            المقرر الأساسية:
-          </p>
-          <ul>
-            <li>
-              <strong>النواة (Kernel):</strong> المكون البرمجي الأساسي المسؤول
-              عن ربط البرمجيات والتطبيقات بالمكونات المادية مباشرة؛ تتحكم
-              بالعمليات، الذاكرة، وجدولة الموارد.
-            </li>
-            <li>
-              <strong>إدارة وتعدد المستخدمين (Multi-user):</strong> آلية معقدة
-              تضمن حماية الحسابات واستقلالية البيئة والموارد لكل حساب على حدة.
-            </li>
-            <li>
-              <strong>تعدد المهام (Multitasking):</strong> تنظيم المعالجة بحيث
-              تبدو للمستخدم وكأن العمليات تشتغل بالتوازي التام بفضل الجدولة
-              السريعة.
-            </li>
-            <li>
-              <strong>الواجهات الرسومية المدعومة:</strong> يدعم بيئات سطح مكتب
-              رائدة ومتقدمة لتسهيل إدارة النظام مثل بيئة
-              <strong>KDE</strong> وبيئة <strong>GNOME</strong>.
-            </li>
-          </ul>
-          <h4>
-            المواصفات التقنية الدنيا ومتطلبات التثبيت (التوزيعة المعتمدة: Redhat
-            Enterprise):
-          </h4>
-          <ul>
-            <li>
-              <strong>المعالج:</strong> متوافق مع معمارية معالجات 32 بت و 64 بت.
-            </li>
-            <li>
-              <strong>الذاكرة العشوائية (RAM):</strong> الحد الأدنى التشغيلي
-              المجرد هو <strong>8 ميغابايت</strong>، بينما يرتفع إلى
-              <strong>256 ميغابايت</strong> لدعم كافة الأدوات والتطبيقات
-              الرسومية القياسية بشكل مستقر.
-            </li>
-            <li>
-              <strong>المساحة التخزينية (Disk Space):</strong> يتطلب التثبيت
-              القياسي الشامل مساحة لا تقل عن <strong>3.5 جيجابايت</strong>.
-            </li>
-            <li>
-              <strong>مساحة الواجهات والكتل:</strong> يتطلب
-              <strong>45 ميغابايت</strong> للواجهات البسيطة، و
-              <strong>71 ميغابايت</strong> لتضمين المجموعات البرمجية والأدوات
-              الإضافية للتطبيقات.
-            </li>
-          </ul>
-          <div class="card-tags">
-            <span class="tag">Kernel</span><span class="tag">Redhat</span
-            ><span class="tag">RAM Requirements</span
-            ><span class="tag">3.5GB</span>
+    <main>
+      <!-- ===== OVERVIEW ===== -->
+      <div class="section active" id="overview">
+        <div class="section-header">
+          <span style="font-size: 2rem">🗺️</span>
+          <h2>خريطة المقرر الكاملة</h2>
+        </div>
+
+        <div class="highlight hl-red">
+          <strong>⚡ أهم 6 نقاط ستخرج في الامتحان:</strong><br />
+          chmod بالأرقام والرموز &nbsp;|&nbsp; حقول /etc/passwd &nbsp;|&nbsp;
+          حقول /etc/shadow &nbsp;|&nbsp; umask &nbsp;|&nbsp; useradd خياراته
+          &nbsp;|&nbsp; grep والتعابير النمطية
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">
+              <span>م1</span>
+              <span class="badge badge-green">أساسيات Linux</span>
+            </div>
+            <ul>
+              <li>مكونات النظام: Kernel, Shell, File System</li>
+              <li>مميزات Unix/Linux</li>
+              <li>تسجيل الدخول والخروج</li>
+              <li>بنية موجه الأوامر (prompt)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م2</span>
+              <span class="badge badge-blue">أوامر المجلدات والملفات</span>
+            </div>
+            <ul>
+              <li>cd, ls, pwd, mkdir, rmdir</li>
+              <li>المسار المطلق vs النسبي</li>
+              <li>cat, more</li>
+              <li>التحويل: &gt; &gt;&gt; &lt; |</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م3</span>
+              <span class="badge badge-blue">نسخ، نقل، حذف</span>
+            </div>
+            <ul>
+              <li>cp / cp -R</li>
+              <li>mv (نقل وإعادة تسمية)</li>
+              <li>rm / rm -r</li>
+              <li>tee, pipeline</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م4</span>
+              <span class="badge badge-yellow">الصلاحيات chmod</span>
+            </div>
+            <ul>
+              <li>الطريقة الرمزية (rwx)</li>
+              <li>الطريقة العددية (744)</li>
+              <li>umask</li>
+              <li>passwd (تغيير كلمة المرور)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م5</span>
+              <span class="badge badge-purple">أوامر متقدمة</span>
+            </div>
+            <ul>
+              <li>wc (إحصاء)</li>
+              <li>cut (قطع)</li>
+              <li>grep (بحث + regex)</li>
+              <li>who, w, alias</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م6</span> <span class="badge badge-red">ملفات النظام</span>
+            </div>
+            <ul>
+              <li>/etc/passwd — 7 حقول</li>
+              <li>/etc/shadow — 9 حقول</li>
+              <li>/etc/group</li>
+              <li>/etc/gshadow</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م7</span> <span class="badge badge-green">المجموعات</span>
+            </div>
+            <ul>
+              <li>groupadd, groupdel, groupmod</li>
+              <li>gpasswd</li>
+              <li>newgrp</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <span>م8</span>
+              <span class="badge badge-blue">إدارة المستخدمين</span>
+            </div>
+            <ul>
+              <li>useradd (وخياراته)</li>
+              <li>userdel</li>
+              <li>التواصل: write, mesg, mail</li>
+              <li>who, w, sleep</li>
+            </ul>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-icon"><i class="fas fa-file-invoice"></i></div>
-          <h3>2. تشريح وهيكلية الحقول لملف المستخدمين /etc/passwd</h3>
-          <p>
-            المستند النظري الصارم لتعريف الهويات. يتم كتابة كل مستخدم في سطر
-            منفصل يتكون تماماً من <strong>7 حقول أساسية</strong> يفصل بينها
-            النقطتان الرأسيتان (<code>:</code>):
-          </p>
-          <div class="table-container">
+          <div class="card-title">📅 خطة المراجعة في 2.5 ساعة</div>
+          <table>
+            <tr>
+              <th>الوقت</th>
+              <th>المحتوى</th>
+              <th>الأولوية</th>
+            </tr>
+            <tr>
+              <td>0:00 - 0:25</td>
+              <td>م1 + م2 (أساسيات + أوامر الملفات)</td>
+              <td><span class="badge badge-green">سهل</span></td>
+            </tr>
+            <tr>
+              <td>0:25 - 0:55</td>
+              <td>م4 (chmod بالأرقام والرموز + umask)</td>
+              <td><span class="badge badge-red">مهم جداً</span></td>
+            </tr>
+            <tr>
+              <td>0:55 - 1:20</td>
+              <td>م6 (passwd + shadow بالحقول)</td>
+              <td><span class="badge badge-red">مهم جداً</span></td>
+            </tr>
+            <tr>
+              <td>1:20 - 1:45</td>
+              <td>م8 (useradd + خياراته)</td>
+              <td><span class="badge badge-yellow">مهم</span></td>
+            </tr>
+            <tr>
+              <td>1:45 - 2:10</td>
+              <td>م5 (grep + regex)</td>
+              <td><span class="badge badge-yellow">مهم</span></td>
+            </tr>
+            <tr>
+              <td>2:10 - 2:30</td>
+              <td>اختبر نفسك + مراجعة سريعة</td>
+              <td><span class="badge badge-blue">تثبيت</span></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== BASICS ===== -->
+      <div class="section" id="basics">
+        <div class="section-header">
+          <span style="font-size: 2rem">💻</span>
+          <h2>م1 — أساسيات Linux</h2>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">🏗️ مكونات نظام Linux</div>
+            <div class="highlight hl-green">
+              <strong>1. Kernel (النواة)</strong><br />
+              القلب — يتحكم في الذاكرة، المعالج، الأجهزة، الملفات
+            </div>
+            <div class="highlight hl-blue">
+              <strong>2. File System (نظام الملفات)</strong><br />
+              ينظم البيانات في ملفات ومجلدات هرمية تبدأ من /
+            </div>
+            <div class="highlight hl-purple">
+              <strong>3. Shell (القشرة)</strong><br />
+              الوسيط بين المستخدم والنظام — يفسر الأوامر
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">⭐ مميزات Unix/Linux</div>
+            <ul>
+              <li>متعدد المهام (<strong>Multi-tasking</strong>)</li>
+              <li>متعدد المستخدمين (<strong>Multi-user</strong>)</li>
+              <li>مفتوح المصدر</li>
+              <li>آمن واستقرار عالٍ</li>
+              <li>يدعم البريد الإلكتروني (E-mail)</li>
+              <li>قابل للنقل لأجهزة مختلفة</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🖥️ شاشة تسجيل الدخول</div>
+          <div class="code-block">
+            localhost login: root Password: •••••••• [root@localhost ~]#
+          </div>
+          <div class="grid3" style="margin-top: 10px">
+            <div class="chmod-cell">
+              <div class="num" style="color: var(--green)">root</div>
+              <div class="label">اسم المستخدم</div>
+            </div>
+            <div class="chmod-cell">
+              <div class="num" style="color: var(--blue)">localhost</div>
+              <div class="label">اسم الجهاز</div>
+            </div>
+            <div class="chmod-cell">
+              <div class="num" style="color: var(--yellow)">#</div>
+              <div class="label">مدير النظام ($ = مستخدم عادي)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">🚪 الخروج من النظام</div>
             <table>
-              <thead>
-                <tr>
-                  <th>رقم الحقل</th>
-                  <th>اسم الحقل التخصصي</th>
-                  <th>الوظيفة والوصف الدقيق</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>الحقل 1</td>
-                  <td><strong>Username</strong></td>
-                  <td>
-                    اسم الحساب الفريد للمستخدم للولوج إلى النظام (لا يتكرر).
-                  </td>
-                </tr>
-                <tr>
-                  <td>الحقل 2</td>
-                  <td><strong>Password Encrypted</strong></td>
-                  <td>
-                    يكون عادة عبارة عن الحرف (<code>x</code>)، مما يشير إلى أن
-                    كلمة المرور مشفرة ومحفوظة بأمان داخل ملف الـ Shadow.
-                  </td>
-                </tr>
-                <tr>
-                  <td>الحقل 3</td>
-                  <td><strong>UID (User ID)</strong></td>
-                  <td>
-                    المعرف الرقمي الفريد للمستخدم (المستخدم الخارق root يمتلك
-                    دائماً UID = 0).
-                  </td>
-                </tr>
-                <tr>
-                  <td>الحقل 4</td>
-                  <td><strong>GID (Group ID)</strong></td>
-                  <td>
-                    المعرف الرقمي للمجموعة الأساسية التي ينتمي إليها الحساب بشكل
-                    تلقائي.
-                  </td>
-                </tr>
-                <tr>
-                  <td>الحقل 5</td>
-                  <td><strong>Comments / GECOS</strong></td>
-                  <td>
-                    حقل الوصف؛ يشمل معلومات اختيارية مثل الاسم الكامل، رقم
-                    المكتب، أو الهاتف.
-                  </td>
-                </tr>
-                <tr>
-                  <td>الحقل 6</td>
-                  <td><strong>Home Directory</strong></td>
-                  <td>
-                    المسار المطلق للمجلد الشخصي للمستخدم في النظام (مثل
-                    <code>/home/username</code>).
-                  </td>
-                </tr>
-                <tr>
-                  <td>الحقل 7</td>
-                  <td><strong>Login Shell</strong></td>
-                  <td>
-                    محاكي ومفسر الأوامر التلقائي الذي يتم تشغيله للمستخدم عند
-                    تسجيل الدخول (مثل <code>/bin/bash</code>).
-                  </td>
-                </tr>
-              </tbody>
+              <tr>
+                <th>الأمر</th>
+                <th>الوظيفة</th>
+              </tr>
+              <tr>
+                <td>exit</td>
+                <td>الخروج من الجلسة</td>
+              </tr>
+              <tr>
+                <td>logout</td>
+                <td>الخروج من النظام</td>
+              </tr>
+              <tr>
+                <td>Ctrl + D</td>
+                <td>اختصار الخروج</td>
+              </tr>
             </table>
           </div>
-          <div class="card-tags">
-            <span class="tag">/etc/passwd</span><span class="tag">UID</span
-            ><span class="tag">GID</span><span class="tag">7 Fields</span>
+          <div class="card">
+            <div class="card-title">📖 الأمر man</div>
+            <div class="code-block">man passwd man 5 passwd</div>
+            <p>يعرض صفحة المساعدة لأي أمر</p>
+            <p>الرقم 5 يعني رقم القسم</p>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-icon"><i class="fas fa-key"></i></div>
-          <h3>3. تشريح ملف الأمان وكلمات المرور المشفرة /etc/shadow</h3>
-          <p>
-            الملف الأمني الحرج والمقيد بصلاحيات القراءة للـ root فقط. يحتوي كل
-            سطر على <strong>9 حقول دقيقة</strong> لإدارة أمان كلمة المرور
-            وسياسات الصلاحية الزمنية:
-          </p>
-          <ul>
-            <li>
-              <strong>الحقل 1 (Username):</strong> اسم المستخدم المطابق تماماً
-              لما هو موجود في ملف passwd.
-            </li>
-            <li>
-              <strong>الحقل 2 (Encrypted Password):</strong> سلسلة طويلة مشفرة
-              تمثل كلمة المرور الفعلية (إذا حوت علامة تعجب <code>!</code> أو
-              نجمة <code>*</code>، فالحساب يكون مقفلاً).
-            </li>
-            <li>
-              <strong>الحقل 3 (Last Change):</strong> تاريخ آخر تغيير لكلمة
-              المرور، محسوباً بعدد الأيام المنقضية منذ تاريخ Epoch (1 يناير
-              1970).
-            </li>
-            <li>
-              <strong>الحقل 4 (Min Days):</strong> الحد الأدنى من الأيام التي
-              يجب أن تمر قبل أن يُسمح للمستخدم بتغيير كلمة مروره مرة أخرى.
-            </li>
-            <li>
-              <strong>الحقل 5 (Max Days):</strong> الحد الأقصى لصلاحية كلمة
-              المرور بالأيام؛ بعدها يلتزم المستخدم بتحديثها.
-            </li>
-            <li>
-              <strong>الحقل 6 (Warning Days):</strong> عدد الأيام التحذيرية التي
-              تسبق انتهاء صلاحية كلمة المرور لإشعار المستخدم بضرورة التغيير.
-            </li>
-            <li>
-              <strong>الحقل 7 (Inactive Days):</strong> فترة السماح الإضافية بعد
-              انتهاء كلمة المرور؛ إذا لم يغيرها، يتم تعطيل الحساب مؤقتاً.
-            </li>
-            <li>
-              <strong>الحقل 8 (Expiration Date):</strong> التاريخ المطلق بالأيام
-              (منذ 1970) الذي تنتهي فيه صلاحية الحساب بالكامل ويقفل تصفحه.
-            </li>
-            <li>
-              <strong>الحقل 9 (Reserved Field):</strong> حقل محجوز من قبل النظام
-              للاستخدامات والترقيات الأمنية المستقبلية.
-            </li>
-          </ul>
-          <div class="card-tags">
-            <span class="tag">/etc/shadow</span><span class="tag">Security</span
-            ><span class="tag">Hashing</span
-            ><span class="tag">Password Aging</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-users-cog"></i></div>
-          <h3>4. بنية ملف المجموعات /etc/group وهيكلية الصلاحيات</h3>
-          <p>
-            الملف المسؤول عن التحكم التشاركي والوصول الجماعي للموارد. ينقسم
-            السطر فيه إلى <strong>4 حقول محددة</strong> تماماً:
-          </p>
-          <ul>
-            <li>
-              <strong>الحقل 1 (Group Name):</strong> الاسم التعريفي الفريد
-              للمجموعة في النظام.
-            </li>
-            <li>
-              <strong>الحقل 2 (Group Password):</strong> رمز تشفير كلمة مرور
-              المجموعة (يكون غالباً <code>x</code>، وإذا تم تعيينه يسمح بالولوج
-              للمجموعة عبر أمر <code>newgrp</code>).
-            </li>
-            <li>
-              <strong>الحقل 3 (GID):</strong> المعرف الرقمي للمجموعة؛ تستخدمه
-              النواة لتحديد صلاحيات الملفات.
-            </li>
-            <li>
-              <strong>الحقل 4 (Group List / Members):</strong> قائمة بأسماء
-              المستخدمين الأعضاء في هذه المجموعة الثانوية، وتفصل بين الأسماء
-              الفاصلة العادية (<code>,</code>).
-            </li>
-          </ul>
-          <div class="info-box">
-            <i class="fas fa-exclamation-triangle"></i>
-            <strong>قاعدة أمنية أكاديمية:</strong> لا يمكن للمستخدمين العاديين
-            تصفح أو تعديل ملفات <code>/etc/shadow</code> أو إحداث تغيير في بنية
-            الحقول إلا من خلال تملّك صلاحيات الـ <strong>root</strong> المطلقة.
-          </div>
-          <div class="card-tags">
-            <span class="tag">/etc/group</span
-            ><span class="tag">Secondary Groups</span
-            ><span class="tag">GID Allocation</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-shield-halved"></i></div>
-          <h3>5. البنية النظرية الرياضية لصلاحيات الملفات (rwx)</h3>
-          <p>
-            تتم إدارة أمان الملفات عبر مصفوفة حماية مقسمة إلى ثلاثة أصناف وثلاثة
-            مستويات أساسية:
-          </p>
-          <h4>أصناف المستخدمين المستهدفين:</h4>
-          <ul>
-            <li>
-              <strong>المالك (u - User/Owner):</strong> حساب المستخدم الذي قام
-              بإنشاء الملف أو المجلد في النظام.
-            </li>
-            <li>
-              <strong>المجموعة (g - Group):</strong> كافة الحسابات المنتمية
-              للمجموعة المالكة للملف.
-            </li>
-            <li>
-              <strong>الآخرون (o - Others):</strong> بقية المستخدمين المتواجدين
-              في النظام والذين ليسوا ملاكاً ولا أعضاء في المجموعة.
-            </li>
-          </ul>
-          <h4>قيمة ومفهوم الصلاحيات الثلاث:</h4>
-          <ul>
-            <li>
-              <strong>القراءة (r - Read):</strong> تسمح بفتح وتصفح محتويات الملف
-              أو سرد محتويات المجلد. قيمتها الرقمية الثنائية الثابتة =
-              <strong>4</strong>.
-            </li>
-            <li>
-              <strong>الكتابة (w - Write):</strong> تسمح بتعديل، مسح، أو الإضافة
-              للملف، وإنشاء وحذف ملفات داخل المجلد. قيمتها الرقمية الثابتة =
-              <strong>2</strong>.
-            </li>
-            <li>
-              <strong>التنفيذ (x - Execute):</strong> تسمح بتشغيل الملف كبرنامج
-              أو نص برمي، وتسمح بالدخول للمجلد عبر أمر cd. قيمتها الرقمية
-              الثابتة = <strong>1</strong>.
-            </li>
-          </ul>
-          <div class="card-tags">
-            <span class="tag">Octal Code</span><span class="tag">Read (4)</span
-            ><span class="tag">Write (2)</span
-            ><span class="tag">Execute (1)</span>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
-          <h3>6. مفسر الأوامر (Shell) وتدفق قنوات البيانات القياسية</h3>
-          <p>
-            الآلية الهندسية للتحكم بالمدخلات والمخرجات وأقنية التدفق والأخطاء
-            داخل بيئة الشل:
-          </p>
-          <ul>
-            <li>
-              <strong>مفهوم الـ Shell:</strong> هو الوسيط البرمجي التفاعلي الذي
-              يستقبل الأوامر السطرية النصية من المستخدم، يحللها للتأكد من خلوها
-              من الأخطاء القواعدية، ثم يمررها كأوامر برمجية منخفضة المستوى إلى
-              النواة (Kernel).
-            </li>
-            <li>
-              <strong>الإدخال القياسي (stdin):</strong> قناة استقبال البيانات
-              التلقائية للنظام (عادة لوحة المفاتيح). معرفها الرقمي الثابت هو
-              <strong>0</strong>.
-            </li>
-            <li>
-              <strong>الإخراج القياسي (stdout):</strong> قناة تصدير البيانات
-              الناتجة عن نجاح تنفيذ الأوامر (عادة الشاشة). معرفها الرقمي الثابت
-              هو <strong>1</strong>.
-            </li>
-            <li>
-              <strong>الخطأ القياسي (stderr):</strong> قناة مستقلة مخصصة لطباعة
-              وتوجيه رسائل الخطأ الناتجة عن الفشل البرمجي للتنفيذ. معرفها الرقمي
-              الثابت هو <strong>2</strong>.
-            </li>
-          </ul>
-          <div class="card-tags">
-            <span class="tag">stdin (0)</span><span class="tag">stdout (1)</span
-            ><span class="tag">stderr (2)</span
-            ><span class="tag">Redirection</span>
+          <div class="card-title">👑 مدير النظام (Super User / root)</div>
+          <div class="grid2">
+            <ul>
+              <li>اسمه: <code>root</code></li>
+              <li>UID = 0</li>
+              <li>له صلاحية كاملة على النظام</li>
+              <li>موجه الأوامر: <code>#</code></li>
+            </ul>
+            <ul>
+              <li>إدارة الأقسام (Partition)</li>
+              <li>إضافة وحذف المستخدمين</li>
+              <li>إدارة المجموعات</li>
+              <li>مراقبة النظام من Console</li>
+            </ul>
           </div>
         </div>
       </div>
-    </section>
 
-    <section
-      id="practical"
-      class="section"
-      style="
-        background: rgba(0, 0, 0, 0.25);
-        border-top: 1px solid rgba(255, 255, 255, 0.02);
-      "
-    >
-      <div class="section-title">
-        <h2>ثانياً: الدليل العملي التطبيقي الشامل للأوامر</h2>
-        <div class="section-line"></div>
-        <p>
-          الصيغ القياسية لكافة أوامر المقرر المقيدة بشروط التشغيل البرمجي،
-          خيارات التمرير، والحلول الفورية لرسائل الأخطاء الشائعة.
+      <!-- ===== FILES ===== -->
+      <div class="section" id="files">
+        <div class="section-header">
+          <span style="font-size: 2rem">📁</span>
+          <h2>م2-3 — الملفات والمجلدات</h2>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🗂️ أوامر التنقل والعرض</div>
+          <table>
+            <tr>
+              <th>الأمر</th>
+              <th>الوظيفة</th>
+              <th>مثال</th>
+            </tr>
+            <tr>
+              <td>pwd</td>
+              <td>عرض المسار الحالي</td>
+              <td><code>pwd</code></td>
+            </tr>
+            <tr>
+              <td>ls</td>
+              <td>عرض محتويات المجلد</td>
+              <td><code>ls -la</code></td>
+            </tr>
+            <tr>
+              <td>ls -l</td>
+              <td>عرض تفصيلي</td>
+              <td><code>ls -l /etc</code></td>
+            </tr>
+            <tr>
+              <td>ls -a</td>
+              <td>عرض الملفات المخفية</td>
+              <td><code>ls -a</code></td>
+            </tr>
+            <tr>
+              <td>ls -R</td>
+              <td>عرض متعدد المستويات</td>
+              <td><code>ls -R /home</code></td>
+            </tr>
+            <tr>
+              <td>cd</td>
+              <td>تغيير المجلد</td>
+              <td><code>cd /home/ali</code></td>
+            </tr>
+            <tr>
+              <td>cd ..</td>
+              <td>الرجوع لمجلد أعلى</td>
+              <td><code>cd ..</code></td>
+            </tr>
+            <tr>
+              <td>cd ~</td>
+              <td>الذهاب للمجلد الرئيسي</td>
+              <td><code>cd ~</code></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚠️ المسار المطلق vs النسبي</div>
+          <div class="grid2">
+            <div class="highlight hl-green">
+              <strong>المسار المطلق</strong> — يبدأ بـ /<br />
+              <code>cd /home/ali/Y</code><br />
+              يعمل من أي مكان
+            </div>
+            <div class="highlight hl-blue">
+              <strong>المسار النسبي</strong> — لا يبدأ بـ /<br />
+              <code>cd Y</code><br />
+              يعمل من المجلد الحالي فقط
+            </div>
+          </div>
+          <div class="highlight hl-yellow">
+            <strong>ملاحظة:</strong> الـ / (slash) تفصل أسماء المجلدات
+            &nbsp;|&nbsp; الـ \ (backslash) للاستمرار في السطر التالي
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📂 إنشاء وحذف المجلدات</div>
+          <table>
+            <tr>
+              <th>الأمر</th>
+              <th>الوظيفة</th>
+            </tr>
+            <tr>
+              <td>mkdir X</td>
+              <td>إنشاء مجلد X</td>
+            </tr>
+            <tr>
+              <td>mkdir -p X/one</td>
+              <td>إنشاء مجلدات متداخلة (يُنشئ X وone معاً)</td>
+            </tr>
+            <tr>
+              <td>mkdir -v X</td>
+              <td>إنشاء مع إظهار رسالة</td>
+            </tr>
+            <tr>
+              <td>rmdir X</td>
+              <td>حذف مجلد فارغ فقط</td>
+            </tr>
+            <tr>
+              <td>rmdir -p X/one</td>
+              <td>حذف مجلدات متداخلة فارغة</td>
+            </tr>
+            <tr>
+              <td>rm -r X</td>
+              <td>حذف مجلد وكل محتوياته</td>
+            </tr>
+            <tr>
+              <td>rm -r -i /home/ali</td>
+              <td>حذف مع سؤال قبل كل ملف</td>
+            </tr>
+          </table>
+          <div class="highlight hl-red">
+            <strong>⚠️ خطأ شائع:</strong> rmdir لا يحذف إلا المجلد الفارغ —
+            استخدم <code>rm -r</code> للمجلدات التي تحتوي ملفات
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📄 إنشاء الملفات والكتابة فيها (cat)</div>
+          <div class="grid2">
+            <div>
+              <div class="code-block">
+                cat > X/one/test Hello World Ctrl+D (لحفظ وإغلاق)
+              </div>
+              <p style="margin-top: 8px">← إنشاء ملف جديد أو استبدال موجود</p>
+            </div>
+            <div>
+              <div class="code-block">cat >> ~/test إضافة نص Ctrl+D</div>
+              <p style="margin-top: 8px">
+                ← إضافة إلى ملف موجود (لا تمسح محتواه)
+              </p>
+            </div>
+          </div>
+          <div class="code-block">
+            cat X/one/test # عرض الملف cat file1 > file2 # نسخ file1 إلى file2
+            cat file1 >> file2 # إضافة file1 إلى file2
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔀 التحويل (Redirection) والـ Pipeline</div>
+          <table>
+            <tr>
+              <th>الرمز</th>
+              <th>الاستخدام</th>
+              <th>مثال</th>
+            </tr>
+            <tr>
+              <td>&gt;</td>
+              <td>تحويل المخرجات إلى ملف (يمسح القديم)</td>
+              <td><code>ls /etc > com</code></td>
+            </tr>
+            <tr>
+              <td>&gt;&gt;</td>
+              <td>إضافة المخرجات لملف (لا يمسح)</td>
+              <td><code>ls >> com</code></td>
+            </tr>
+            <tr>
+              <td>&lt;</td>
+              <td>إدخال من ملف بدل لوحة المفاتيح</td>
+              <td><code>mail ali &lt; com</code></td>
+            </tr>
+            <tr>
+              <td>|</td>
+              <td>Pipeline — مخرج أمر يصبح دخل التالي</td>
+              <td><code>ls -l | tee ls</code></td>
+            </tr>
+            <tr>
+              <td>1&gt;</td>
+              <td>تحويل المخرج القياسي فقط</td>
+              <td><code>ls 1>com</code></td>
+            </tr>
+            <tr>
+              <td>2&gt;</td>
+              <td>تحويل الأخطاء فقط</td>
+              <td><code>ls 2>error</code></td>
+            </tr>
+          </table>
+          <div class="code-block blue">
+            ls -l /etc 2>error 1>com # أخطاء في error، نتائج في com ls -l | tee
+            ls # يعرض ويحفظ في نفس الوقت tee -a # يضيف بدل أن يستبدل
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 نسخ ونقل الملفات</div>
+          <table>
+            <tr>
+              <th>الأمر</th>
+              <th>الوظيفة</th>
+            </tr>
+            <tr>
+              <td>cp test1 test2</td>
+              <td>نسخ ملف</td>
+            </tr>
+            <tr>
+              <td>cp -R X Y/XX</td>
+              <td>نسخ مجلد كامل</td>
+            </tr>
+            <tr>
+              <td>mv test1 test2</td>
+              <td>نقل أو إعادة تسمية</td>
+            </tr>
+            <tr>
+              <td>mv file1 file2 dir/</td>
+              <td>نقل عدة ملفات لمجلد</td>
+            </tr>
+          </table>
+          <div class="code-block">
+            cp ali/X/one/test ali/Y/test2 # نسخ ملف باسم جديد cp -R ali/X
+            ali/Z/XX # نسخ مجلد X باسم XX داخل Z mv test2 exam # إعادة تسمية
+            test2 إلى exam
+          </div>
+          <div class="highlight hl-yellow">
+            <strong>ملاحظة mv:</strong> إذا كان arg2 مجلداً موجوداً → ينقل إليه
+            | إذا لم يكن موجوداً → يعيد التسمية
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== CHMOD ===== -->
+      <div class="section" id="chmod">
+        <div class="section-header">
+          <span style="font-size: 2rem">🔐</span>
+          <h2>م4 — الصلاحيات chmod وumask</h2>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 جدول الصلاحيات (احفظ هذا!)</div>
+          <div class="chmod-grid">
+            <div class="chmod-cell">
+              <div class="num">r</div>
+              <div class="label">قراءة (Read)</div>
+            </div>
+            <div class="chmod-cell">
+              <div class="num">w</div>
+              <div class="label">كتابة (Write)</div>
+            </div>
+            <div class="chmod-cell">
+              <div class="num">x</div>
+              <div class="label">تنفيذ (Execute)</div>
+            </div>
+            <div class="chmod-cell">
+              <div class="num">-</div>
+              <div class="label">بدون صلاحية</div>
+            </div>
+          </div>
+          <table>
+            <tr>
+              <th>الصلاحية</th>
+              <th>User (u)</th>
+              <th>Group (g)</th>
+              <th>Other (o)</th>
+            </tr>
+            <tr>
+              <td>r (قراءة)</td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                400
+              </td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                40
+              </td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                4
+              </td>
+            </tr>
+            <tr>
+              <td>w (كتابة)</td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                200
+              </td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                20
+              </td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                2
+              </td>
+            </tr>
+            <tr>
+              <td>x (تنفيذ)</td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                100
+              </td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                10
+              </td>
+              <td
+                style="
+                  color: var(--yellow);
+                  font-family: monospace;
+                  text-align: center;
+                "
+              >
+                1
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">1️⃣ الطريقة الرمزية</div>
+            <div class="code-block">
+              chmod u=rwx,g=rx,o=rx X/one/test chmod go-w X/one/test chmod a+x
+              X/one/test chmod +x X/one/test
+            </div>
+            <table>
+              <tr>
+                <th>رمز</th>
+                <th>معنى</th>
+              </tr>
+              <tr>
+                <td>u</td>
+                <td>المالك (User)</td>
+              </tr>
+              <tr>
+                <td>g</td>
+                <td>المجموعة (Group)</td>
+              </tr>
+              <tr>
+                <td>o</td>
+                <td>الآخرون (Other)</td>
+              </tr>
+              <tr>
+                <td>a</td>
+                <td>الكل (All)</td>
+              </tr>
+              <tr>
+                <td>+</td>
+                <td>إضافة صلاحية</td>
+              </tr>
+              <tr>
+                <td>-</td>
+                <td>إلغاء صلاحية</td>
+              </tr>
+              <tr>
+                <td>=</td>
+                <td>تحديد صلاحيات بالضبط</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="card-title">2️⃣ الطريقة العددية — أمثلة</div>
+            <div class="highlight hl-yellow">
+              <strong>chmod 755</strong> = 400+200+100+40+10+4+1 = rwxr-xr-x
+            </div>
+            <div class="highlight hl-green">
+              <strong>chmod 644</strong> = 400+200+40+4 = rw-r--r--
+            </div>
+            <div class="highlight hl-blue">
+              <strong>chmod 766</strong> = 400+200+100+40+20+4+2 = rwxrw-rw-
+            </div>
+            <div class="highlight hl-purple">
+              <strong>chmod 744</strong> = 400+200+100+40+4 = rwxr--r--
+            </div>
+
+            <div class="code-block yellow">
+              chmod 755 X/one/test chmod 644 Y/exam
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">3️⃣ النظام الثُّلاثي (Fibonacci / Octal)</div>
+          <p>
+            كل صلاحية تُمثَّل بـ 3 بتات ثنائية: <strong>rwx = 111 = 7</strong>
+          </p>
+          <div class="code-block">
+            مثال: rwx r-- r-- ثنائي: 111 100 100 عشري: 7 4 4 → chmod 744
+          </div>
+          <table>
+            <tr>
+              <th>rwx</th>
+              <th>ثنائي</th>
+              <th>عشري</th>
+            </tr>
+            <tr>
+              <td>rwx</td>
+              <td>111</td>
+              <td style="color: var(--yellow)">7</td>
+            </tr>
+            <tr>
+              <td>rw-</td>
+              <td>110</td>
+              <td style="color: var(--yellow)">6</td>
+            </tr>
+            <tr>
+              <td>r-x</td>
+              <td>101</td>
+              <td style="color: var(--yellow)">5</td>
+            </tr>
+            <tr>
+              <td>r--</td>
+              <td>100</td>
+              <td style="color: var(--yellow)">4</td>
+            </tr>
+            <tr>
+              <td>-wx</td>
+              <td>011</td>
+              <td style="color: var(--yellow)">3</td>
+            </tr>
+            <tr>
+              <td>-w-</td>
+              <td>010</td>
+              <td style="color: var(--yellow)">2</td>
+            </tr>
+            <tr>
+              <td>--x</td>
+              <td>001</td>
+              <td style="color: var(--yellow)">1</td>
+            </tr>
+            <tr>
+              <td>---</td>
+              <td>000</td>
+              <td style="color: var(--yellow)">0</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🎭 umask — قناع القيم الافتراضية</div>
+          <div class="grid2">
+            <div class="umask-box">
+              <div class="small">الصلاحيات الافتراضية للملفات</div>
+              <div class="big" style="color: var(--blue)">666</div>
+            </div>
+            <div class="umask-box">
+              <div class="small">الصلاحيات الافتراضية للمجلدات</div>
+              <div class="big" style="color: var(--purple)">777</div>
+            </div>
+          </div>
+          <div class="highlight hl-yellow" style="margin-top: 12px">
+            <strong>القاعدة:</strong> الصلاحية الفعلية = القيمة الافتراضية −
+            umask<br />
+            مثال: <code>umask 026</code> → الملف = 666 - 026 =
+            <strong>640</strong>
+          </div>
+          <div class="code-block">
+            umask # عرض قيمة umask الحالية umask 026 # تغيير umask umask 0022 #
+            النظام الافتراضي عادةً
+          </div>
+          <div class="highlight hl-blue">
+            <strong>ملاحظة:</strong> umask يؤثر على الملفات والمجلدات معاً بنفس
+            القيمة
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔑 passwd — تغيير كلمة المرور</div>
+          <div class="code-block">
+            passwd # Changing password for username: # Enter old password: # New
+            password: # Re-enter new password:
+          </div>
+          <ul>
+            <li>يُخزَّن في <code>/etc/passwd</code> (مشفر في /etc/shadow)</li>
+            <li>كلمة المرور لا تظهر عند الكتابة</li>
+            <li>يجب أن تكون طويلة وتحتوي أرقاماً وحروفاً</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title">👁️ more — عرض الملفات صفحة صفحة</div>
+          <div class="code-block">
+            more filename more -22 filename # 22 سطر لكل صفحة
+          </div>
+          <table>
+            <tr>
+              <th>المفتاح</th>
+              <th>الوظيفة</th>
+            </tr>
+            <tr>
+              <td>Space</td>
+              <td>الصفحة التالية</td>
+            </tr>
+            <tr>
+              <td>Enter</td>
+              <td>سطر واحد للأمام</td>
+            </tr>
+            <tr>
+              <td>b</td>
+              <td>الصفحة السابقة</td>
+            </tr>
+            <tr>
+              <td>d أو Ctrl+D</td>
+              <td>نصف صفحة للأمام</td>
+            </tr>
+            <tr>
+              <td>q أو Q</td>
+              <td>الخروج</td>
+            </tr>
+            <tr>
+              <td>/text</td>
+              <td>البحث عن نص</td>
+            </tr>
+            <tr>
+              <td>-f</td>
+              <td>إخفاء + عرض رقم السطر</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- ===== ADVANCED ===== -->
+      <div class="section" id="advanced">
+        <div class="section-header">
+          <span style="font-size: 2rem">🔍</span>
+          <h2>م5 — الأوامر المتقدمة</h2>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📊 wc — إحصاء الكلمات والأسطر</div>
+          <div class="code-block">
+            wc filename wc -l filename # عدد الأسطر wc -w filename # عدد الكلمات
+            wc -c filename # عدد الأحرف (bytes)
+          </div>
+          <p>يعطي 3 أرقام: عدد الأسطر، الكلمات، الأحرف</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">✂️ cut — قطع أجزاء من الأسطر</div>
+          <div class="code-block">
+            cut -f 1,3 X/one/test # قطع العمود 1 و3 (فصل بـ tab) cut -c 1-8
+            X/one/test # قطع الأحرف من 1 إلى 8 cut -f 1-3,10 file # قطع أعمدة 1
+            إلى 3 والعمود 10
+          </div>
+          <table>
+            <tr>
+              <th>الخيار</th>
+              <th>الوظيفة</th>
+            </tr>
+            <tr>
+              <td>-f</td>
+              <td>قطع بالعمود (مفصولة بـ tab افتراضياً)</td>
+            </tr>
+            <tr>
+              <td>-c</td>
+              <td>قطع بالأحرف</td>
+            </tr>
+            <tr>
+              <td>-d</td>
+              <td>تحديد محدد مختلف (delimiter)</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔎 grep — البحث في الملفات</div>
+          <div class="code-block">
+            grep "john" X/one/test grep "john smith" X/one/test # بحث عن جملة
+            (بين "") grep -i "john" file # بحث غير حساس للحجم grep "pattern"
+            file1 file2 # بحث في عدة ملفات
+          </div>
+
+          <div class="highlight hl-purple">
+            <strong>التعابير النمطية (Regular Expressions):</strong>
+          </div>
+          <table>
+            <tr>
+              <th>الرمز</th>
+              <th>المعنى</th>
+              <th>مثال</th>
+            </tr>
+            <tr>
+              <td>.</td>
+              <td>أي حرف واحد</td>
+              <td><code>grep "a.b" file</code></td>
+            </tr>
+            <tr>
+              <td>*</td>
+              <td>صفر أو أكثر من السابق</td>
+              <td><code>grep "ab*" file</code></td>
+            </tr>
+            <tr>
+              <td>[abc]</td>
+              <td>أي حرف من المجموعة</td>
+              <td><code>grep "[aeiou]" file</code></td>
+            </tr>
+            <tr>
+              <td>[a-z]</td>
+              <td>نطاق من a إلى z</td>
+              <td><code>grep "[a-z]" file</code></td>
+            </tr>
+            <tr>
+              <td>[^abc]</td>
+              <td>أي حرف ليس في المجموعة</td>
+              <td><code>grep "[^0-9]" file</code></td>
+            </tr>
+            <tr>
+              <td>^</td>
+              <td>بداية السطر</td>
+              <td><code>grep "^root" file</code></td>
+            </tr>
+            <tr>
+              <td>$</td>
+              <td>نهاية السطر</td>
+              <td><code>grep "bash$" file</code></td>
+            </tr>
+            <tr>
+              <td>\</td>
+              <td>إلغاء المعنى الخاص للرمز</td>
+              <td><code>grep "\." file</code></td>
+            </tr>
+          </table>
+          <div class="code-block blue">
+            grep "^[a-f]" file # يبحث عن سطر يبدأ بـ a إلى f grep "[a-f][a-m]"
+            file # حرف من a-f ثم حرف من a-m grep "smith" file1 file2 # بحث في
+            ملفين
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">👤 who — عرض المتصلين</div>
+            <div class="code-block">
+              who who -H # مع عناوين الأعمدة who -g # مع معلومات المجموعة who am
+              i # معلوماتي أنا
+            </div>
+            <p>يعرض: اسم المستخدم، TTY، وقت الاتصال</p>
+          </div>
+          <div class="card">
+            <div class="card-title">📊 w — إحصاءات المستخدمين</div>
+            <div class="code-block">w w username</div>
+            <p>يعرض: USER, TTY, FROM, LOGIN@, IDLE, JCPU, PCPU, WHAT</p>
+            <ul
+              style="font-size: 0.8rem; color: var(--text-dim); margin-top: 8px"
+            >
+              <li>IDLE — وقت الخمول</li>
+              <li>JCPU — وقت المعالج للجلسة</li>
+              <li>PCPU — وقت المعالج للعملية الحالية</li>
+              <li>WHAT — الأمر الحالي</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">💤 sleep — تأخير الأوامر</div>
+            <div class="code-block">
+              sleep 60 # ينتظر 60 ثانية sleep 60 ; ls # ينفذ ls بعد دقيقة
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">🔗 alias — اختصارات الأوامر</div>
+            <div class="code-block">
+              alias ls="ls -l" alias rm="rm -i" alias # عرض كل الـ aliases
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">💬 التواصل بين المستخدمين</div>
+          <table>
+            <tr>
+              <th>الأمر</th>
+              <th>الاستخدام</th>
+              <th>الخروج</th>
+            </tr>
+            <tr>
+              <td>write ali</td>
+              <td>إرسال رسالة فورية لمستخدم</td>
+              <td>Ctrl+D</td>
+            </tr>
+            <tr>
+              <td>mesg y/n</td>
+              <td>السماح/منع استقبال الرسائل</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td>mail ali</td>
+              <td>إرسال بريد (يُخزَّن في /var/spool/mail)</td>
+              <td>Ctrl+D أو .</td>
+            </tr>
+            <tr>
+              <td>mail</td>
+              <td>قراءة البريد الوارد</td>
+              <td>q</td>
+            </tr>
+          </table>
+          <div class="code-block">
+            write ali # يكتب رسالة لـ ali mail ali < com # يرسل محتوى الملف com
+            بريداً لـ ali mail -s "subject" ali # بريد بعنوان
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== PASSWD/SHADOW ===== -->
+      <div class="section" id="passwd">
+        <div class="section-header">
+          <span style="font-size: 2rem">👤</span>
+          <h2>م6-7 — ملفات النظام</h2>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📄 /etc/passwd — 7 حقول (مهم جداً!)</div>
+          <div class="code-block blue">
+            root:x:0:0:root:/root:/bin/bash ↑ ↑ ↑ ↑ ↑ ↑ ↑ 1 2 3 4 5 6 7
+          </div>
+          <div class="passwd-fields" style="margin-top: 12px">
+            <div class="passwd-field">
+              <div class="passwd-num">1</div>
+              <div>
+                <div class="passwd-key">username</div>
+                <div class="passwd-val">اسم المستخدم</div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">2</div>
+              <div>
+                <div class="passwd-key">password (x)</div>
+                <div class="passwd-val">
+                  x = كلمة المرور محفوظة في /etc/shadow
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">3</div>
+              <div>
+                <div class="passwd-key">UID</div>
+                <div class="passwd-val">
+                  رقم هوية المستخدم (root=0، مستخدمون عاديون من 500+)
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">4</div>
+              <div>
+                <div class="passwd-key">GID</div>
+                <div class="passwd-val">رقم هوية المجموعة الرئيسية</div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">5</div>
+              <div>
+                <div class="passwd-key">comment</div>
+                <div class="passwd-val">تعليق / الاسم الكامل</div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">6</div>
+              <div>
+                <div class="passwd-key">home directory</div>
+                <div class="passwd-val">
+                  مجلد المستخدم الرئيسي (مثل /home/ali)
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">7</div>
+              <div>
+                <div class="passwd-key">shell</div>
+                <div class="passwd-val">نوع shell (مثل /bin/bash)</div>
+              </div>
+            </div>
+          </div>
+          <div class="highlight hl-yellow" style="margin-top: 12px">
+            ⚠️ أي مستخدم يمكنه قراءة /etc/passwd لكن لا يرى كلمات المرور (مخزنة
+            في shadow)
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔒 /etc/shadow — 9 حقول (احفظها!)</div>
+          <div class="code-block purple">
+            root:$1$xyz...:15000:0:99999:7::: ↑ ↑ ↑ ↑ ↑ ↑↑↑↑ 1 2 3 4 5 6789
+          </div>
+          <div class="passwd-fields" style="margin-top: 12px">
+            <div class="passwd-field">
+              <div class="passwd-num">1</div>
+              <div>
+                <div class="passwd-key">username</div>
+                <div class="passwd-val">اسم المستخدم</div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">2</div>
+              <div>
+                <div class="passwd-key">encrypted password</div>
+                <div class="passwd-val">
+                  كلمة المرور المشفرة (md5) — * تعني مقفول — ! تعني معطل
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">3</div>
+              <div>
+                <div class="passwd-key">password last change</div>
+                <div class="passwd-val">
+                  تاريخ آخر تغيير لكلمة المرور (بالأيام منذ 1/1/1970)
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">4</div>
+              <div>
+                <div class="passwd-key">min days before change</div>
+                <div class="passwd-val">
+                  الحد الأدنى من الأيام قبل السماح بتغيير كلمة المرور
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">5</div>
+              <div>
+                <div class="passwd-key">max days before change required</div>
+                <div class="passwd-val">
+                  الحد الأقصى من الأيام قبل إجبار تغيير كلمة المرور
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">6</div>
+              <div>
+                <div class="passwd-key">days warning before change</div>
+                <div class="passwd-val">
+                  عدد أيام الإنذار قبل انتهاء صلاحية كلمة المرور
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">7</div>
+              <div>
+                <div class="passwd-key">days before account disabled</div>
+                <div class="passwd-val">
+                  عدد الأيام بعد انتهاء الصلاحية قبل تعطيل الحساب
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">8</div>
+              <div>
+                <div class="passwd-key">date account disabled</div>
+                <div class="passwd-val">
+                  تاريخ تعطيل الحساب (بالأيام منذ 1/1/1970)
+                </div>
+              </div>
+            </div>
+            <div class="passwd-field">
+              <div class="passwd-num">9</div>
+              <div>
+                <div class="passwd-key">reserved</div>
+                <div class="passwd-val">محجوز للاستخدام المستقبلي</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">👥 /etc/group — ملف المجموعات</div>
+          <div class="code-block">bin:x:1:root,bin,daemon ↑ ↑ ↑ ↑ 1 2 3 4</div>
+          <table>
+            <tr>
+              <th>#</th>
+              <th>الحقل</th>
+              <th>المعنى</th>
+            </tr>
+            <tr>
+              <td>1</td>
+              <td>group name</td>
+              <td>اسم المجموعة</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>password (x)</td>
+              <td>كلمة مرور المجموعة</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>GID</td>
+              <td>رقم هوية المجموعة</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>members</td>
+              <td>أعضاء المجموعة</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">🔐 /etc/gshadow</div>
+            <p>ملف يخزن كلمات مرور المجموعات المشفرة</p>
+            <div class="code-block">root:GSDXG7EVNKXDG::root</div>
+            <p style="font-size: 0.82rem; color: var(--text-dim)">
+              ! = بدون كلمة مرور | * = مقفول
+            </p>
+          </div>
+          <div class="card">
+            <div class="card-title">⌨️ أوامر قراءة الملفات</div>
+            <div class="code-block">
+              cat /etc/passwd cat /etc/shadow cat /etc/group cat /etc/gshadow
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== USERS ===== -->
+      <div class="section" id="users">
+        <div class="section-header">
+          <span style="font-size: 2rem">👥</span>
+          <h2>م8 — إدارة المستخدمين والمجموعات</h2>
+        </div>
+
+        <div class="card">
+          <div class="card-title">➕ useradd — إضافة مستخدم جديد</div>
+          <div class="code-block">/usr/sbin/useradd options username</div>
+          <table>
+            <tr>
+              <th>الخيار</th>
+              <th>الوظيفة</th>
+              <th>مثال</th>
+            </tr>
+            <tr>
+              <td>-m</td>
+              <td>إنشاء مجلد المستخدم تلقائياً</td>
+              <td><code>useradd -m ali</code></td>
+            </tr>
+            <tr>
+              <td>-d path</td>
+              <td>تحديد مجلد رئيسي مختلف</td>
+              <td><code>useradd -d /home/mydir ali</code></td>
+            </tr>
+            <tr>
+              <td>-s shell</td>
+              <td>تحديد نوع shell</td>
+              <td><code>useradd -s /bin/bash ali</code></td>
+            </tr>
+            <tr>
+              <td>-G group</td>
+              <td>إضافة لمجموعة إضافية</td>
+              <td><code>useradd -G floppy ali</code></td>
+            </tr>
+            <tr>
+              <td>-e date</td>
+              <td>تاريخ انتهاء الحساب</td>
+              <td><code>useradd -e 2020-05-15 ali</code></td>
+            </tr>
+            <tr>
+              <td>-p pass</td>
+              <td>كلمة مرور مشفرة</td>
+              <td><code>useradd -p "crypt" ali</code></td>
+            </tr>
+            <tr>
+              <td>-f days</td>
+              <td>أيام قبل تعطيل الحساب</td>
+              <td><code>useradd -f 30 ali</code></td>
+            </tr>
+            <tr>
+              <td>-c comment</td>
+              <td>تعليق (الاسم الكامل)</td>
+              <td><code>useradd -c "Ali Ahmed" ali</code></td>
+            </tr>
+          </table>
+          <div class="code-block green">
+            useradd -s /bin/tcsh -G floppy -e 2020-05-15 ali # ثم تعيين كلمة
+            مرور passwd ali
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">➖ userdel — حذف مستخدم</div>
+          <div class="code-block">
+            /usr/sbin/userdel username # حذف المستخدم فقط /usr/sbin/userdel -r
+            username # حذف المستخدم + مجلده + ملفاته
+          </div>
+          <div class="highlight hl-red">
+            ⚠️ الخيار <code>-r</code> يحذف كل ملفات المستخدم نهائياً!
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <div class="card-title">➕ groupadd</div>
+            <div class="code-block">
+              /usr/sbin/groupadd options groupname groupadd -g 500 developers #
+              مع تحديد GID
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">➖ groupdel</div>
+            <div class="code-block">/usr/sbin/groupdel groupname</div>
+            <p>لا يحذف المستخدمين داخل المجموعة</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">⚙️ groupmod — تعديل المجموعة</div>
+          <div class="code-block">/usr/sbin/groupmod options groupname</div>
+          <table>
+            <tr>
+              <th>الخيار</th>
+              <th>الوظيفة</th>
+            </tr>
+            <tr>
+              <td>-n newname</td>
+              <td>تغيير اسم المجموعة</td>
+            </tr>
+            <tr>
+              <td>-g newGID</td>
+              <td>تغيير رقم GID</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔑 gpasswd — إدارة كلمة مرور المجموعة</div>
+          <div class="code-block">gpasswd options group-name</div>
+          <table>
+            <tr>
+              <th>الخيار</th>
+              <th>الوظيفة</th>
+            </tr>
+            <tr>
+              <td>-a user</td>
+              <td>إضافة مستخدم للمجموعة</td>
+            </tr>
+            <tr>
+              <td>-d user</td>
+              <td>حذف مستخدم من المجموعة</td>
+            </tr>
+            <tr>
+              <td>-r</td>
+              <td>حذف كلمة المرور</td>
+            </tr>
+            <tr>
+              <td>-R</td>
+              <td>تعطيل الوصول للمجموعة</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-title">🔄 newgrp — تغيير المجموعة الحالية</div>
+          <div class="code-block">newgrp new-group-name</div>
+          <p>يغير المجموعة الفعّالة للمستخدم في الجلسة الحالية</p>
+          <p>إذا كانت للمجموعة كلمة مرور، يطلبها</p>
+        </div>
+      </div>
+
+      <!-- ===== ALL COMMANDS ===== -->
+      <div class="section" id="commands">
+        <div class="section-header">
+          <span style="font-size: 2rem">📋</span>
+          <h2>جميع الأوامر — مرجع سريع</h2>
+        </div>
+
+        <input
+          type="text"
+          class="search-box"
+          placeholder="🔍 ابحث عن أمر..."
+          onkeyup="searchCommands(this.value)"
+          id="cmdSearch"
+        />
+
+        <div id="cmdList">
+          <!-- Navigation -->
+          <h3>🗂️ التنقل والعرض</h3>
+          <div class="cmd-item">
+            <code>pwd</code>
+            <p>عرض المسار الحالي (Print Working Directory)</p>
+          </div>
+          <div class="cmd-item">
+            <code>ls</code>
+            <p>عرض محتويات المجلد الحالي</p>
+          </div>
+          <div class="cmd-item">
+            <code>ls -l</code>
+            <p>عرض تفصيلي مع الصلاحيات</p>
+          </div>
+          <div class="cmd-item">
+            <code>ls -a</code>
+            <p>عرض الملفات المخفية</p>
+          </div>
+          <div class="cmd-item">
+            <code>ls -R</code>
+            <p>عرض متعدد المستويات (recursive)</p>
+          </div>
+          <div class="cmd-item">
+            <code>cd /path</code>
+            <p>الانتقال لمسار مطلق</p>
+          </div>
+          <div class="cmd-item">
+            <code>cd path</code>
+            <p>الانتقال لمسار نسبي</p>
+          </div>
+          <div class="cmd-item">
+            <code>cd ..</code>
+            <p>الرجوع للمجلد الأعلى</p>
+          </div>
+          <div class="cmd-item">
+            <code>cd ~</code>
+            <p>الذهاب للمجلد الرئيسي (home)</p>
+          </div>
+
+          <h3>📂 المجلدات</h3>
+          <div class="cmd-item">
+            <code>mkdir X</code>
+            <p>إنشاء مجلد X</p>
+          </div>
+          <div class="cmd-item">
+            <code>mkdir -p X/one</code>
+            <p>إنشاء مجلدات متداخلة دفعة واحدة</p>
+          </div>
+          <div class="cmd-item">
+            <code>mkdir -v X</code>
+            <p>إنشاء مع إظهار رسالة تأكيد</p>
+          </div>
+          <div class="cmd-item">
+            <code>rmdir X</code>
+            <p>حذف مجلد فارغ فقط</p>
+          </div>
+          <div class="cmd-item">
+            <code>rmdir -p X/one</code>
+            <p>حذف مجلدات متداخلة فارغة</p>
+          </div>
+
+          <h3>📄 الملفات</h3>
+          <div class="cmd-item">
+            <code>cat > file</code>
+            <p>إنشاء ملف جديد أو استبدال موجود (Ctrl+D للحفظ)</p>
+          </div>
+          <div class="cmd-item">
+            <code>cat >> file</code>
+            <p>إضافة نص لملف موجود</p>
+          </div>
+          <div class="cmd-item">
+            <code>cat file</code>
+            <p>عرض محتوى الملف</p>
+          </div>
+          <div class="cmd-item">
+            <code>more file</code>
+            <p>عرض الملف صفحة صفحة</p>
+          </div>
+          <div class="cmd-item">
+            <code>cp src dst</code>
+            <p>نسخ ملف</p>
+          </div>
+          <div class="cmd-item">
+            <code>cp -R src dst</code>
+            <p>نسخ مجلد كامل مع محتوياته</p>
+          </div>
+          <div class="cmd-item">
+            <code>mv src dst</code>
+            <p>نقل أو إعادة تسمية</p>
+          </div>
+          <div class="cmd-item">
+            <code>rm file</code>
+            <p>حذف ملف</p>
+          </div>
+          <div class="cmd-item">
+            <code>rm -r dir</code>
+            <p>حذف مجلد وكل محتوياته</p>
+          </div>
+          <div class="cmd-item">
+            <code>rm -i file</code>
+            <p>حذف مع سؤال تأكيد</p>
+          </div>
+
+          <h3>🔐 الصلاحيات</h3>
+          <div class="cmd-item">
+            <code>chmod 755 file</code>
+            <p>تغيير صلاحيات بالأرقام</p>
+          </div>
+          <div class="cmd-item">
+            <code>chmod u+x file</code>
+            <p>إضافة صلاحية تنفيذ للمالك</p>
+          </div>
+          <div class="cmd-item">
+            <code>chmod go-w file</code>
+            <p>إلغاء صلاحية الكتابة من المجموعة والآخرين</p>
+          </div>
+          <div class="cmd-item">
+            <code>chmod a+r file</code>
+            <p>إضافة صلاحية القراءة للجميع</p>
+          </div>
+          <div class="cmd-item">
+            <code>umask</code>
+            <p>عرض قيمة umask الحالية</p>
+          </div>
+          <div class="cmd-item">
+            <code>umask 026</code>
+            <p>تعيين قيمة umask</p>
+          </div>
+          <div class="cmd-item">
+            <code>passwd</code>
+            <p>تغيير كلمة المرور</p>
+          </div>
+
+          <h3>🔍 البحث والتحليل</h3>
+          <div class="cmd-item">
+            <code>grep "text" file</code>
+            <p>البحث عن نص في ملف</p>
+          </div>
+          <div class="cmd-item">
+            <code>grep "^text" file</code>
+            <p>البحث عن سطور تبدأ بـ text</p>
+          </div>
+          <div class="cmd-item">
+            <code>wc file</code>
+            <p>عدد الأسطر والكلمات والأحرف</p>
+          </div>
+          <div class="cmd-item">
+            <code>wc -l file</code>
+            <p>عدد الأسطر فقط</p>
+          </div>
+          <div class="cmd-item">
+            <code>wc -w file</code>
+            <p>عدد الكلمات فقط</p>
+          </div>
+          <div class="cmd-item">
+            <code>cut -f 1,3 file</code>
+            <p>قطع الأعمدة 1 و3</p>
+          </div>
+          <div class="cmd-item">
+            <code>cut -c 1-8 file</code>
+            <p>قطع الأحرف من 1 إلى 8</p>
+          </div>
+
+          <h3>👤 المستخدمون</h3>
+          <div class="cmd-item">
+            <code>who</code>
+            <p>عرض المستخدمين المتصلين حالياً</p>
+          </div>
+          <div class="cmd-item">
+            <code>w</code>
+            <p>عرض إحصاءات المستخدمين المتصلين</p>
+          </div>
+          <div class="cmd-item">
+            <code>useradd -m username</code>
+            <p>إضافة مستخدم جديد مع مجلده</p>
+          </div>
+          <div class="cmd-item">
+            <code>userdel -r username</code>
+            <p>حذف مستخدم مع كل ملفاته</p>
+          </div>
+          <div class="cmd-item">
+            <code>groupadd groupname</code>
+            <p>إنشاء مجموعة جديدة</p>
+          </div>
+          <div class="cmd-item">
+            <code>groupdel groupname</code>
+            <p>حذف مجموعة</p>
+          </div>
+          <div class="cmd-item">
+            <code>newgrp groupname</code>
+            <p>تغيير المجموعة الحالية</p>
+          </div>
+          <div class="cmd-item">
+            <code>gpasswd -a user grp</code>
+            <p>إضافة مستخدم لمجموعة</p>
+          </div>
+
+          <h3>💬 التواصل</h3>
+          <div class="cmd-item">
+            <code>write username</code>
+            <p>إرسال رسالة فورية لمستخدم (Ctrl+D للإنهاء)</p>
+          </div>
+          <div class="cmd-item">
+            <code>mesg y</code>
+            <p>السماح باستقبال الرسائل</p>
+          </div>
+          <div class="cmd-item">
+            <code>mesg n</code>
+            <p>منع استقبال الرسائل</p>
+          </div>
+          <div class="cmd-item">
+            <code>mail username</code>
+            <p>إرسال بريد لمستخدم</p>
+          </div>
+          <div class="cmd-item">
+            <code>mail</code>
+            <p>قراءة البريد الوارد</p>
+          </div>
+
+          <h3>📊 متنوعة</h3>
+          <div class="cmd-item">
+            <code>alias ls="ls -l"</code>
+            <p>تعريف اختصار لأمر</p>
+          </div>
+          <div class="cmd-item">
+            <code>sleep 60</code>
+            <p>الانتظار 60 ثانية</p>
+          </div>
+          <div class="cmd-item">
+            <code>man command</code>
+            <p>عرض صفحة المساعدة</p>
+          </div>
+          <div class="cmd-item">
+            <code>tee file</code>
+            <p>عرض المخرجات وحفظها في ملف معاً</p>
+          </div>
+          <div class="cmd-item">
+            <code>cat /etc/passwd</code>
+            <p>عرض ملف المستخدمين</p>
+          </div>
+          <div class="cmd-item">
+            <code>cat /etc/shadow</code>
+            <p>عرض كلمات المرور المشفرة</p>
+          </div>
+          <div class="cmd-item">
+            <code>cat /etc/group</code>
+            <p>عرض ملف المجموعات</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== QUIZ ===== -->
+      <div class="section" id="quiz">
+        <div class="section-header">
+          <span style="font-size: 2rem">🧠</span>
+          <h2>اختبر نفسك</h2>
+        </div>
+
+        <div class="progress-section">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <span>التقدم</span>
+            <span id="quizScore" style="color: var(--green); font-weight: 700"
+              >0 / 10</span
+            >
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="quizProgress" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz-card" id="q1">
+          <div class="quiz-q">1. ما هي نتيجة الأمر: chmod 644 file ؟</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q1', 'a')">
+              a) rwxr--r--
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q1', 'b')">
+              b) rw-r--r-- ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q1', 'c')">
+              c) rw-rw-r--
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q1', 'd')">
+              d) rwxrwxr--
+            </button>
+          </div>
+          <div class="quiz-explain" id="q1-exp">
+            644 = 400+200+40+4 = rw-r--r-- | User: rw (لا تنفيذ) | Group: r-- |
+            Other: r--
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card" id="q2">
+          <div class="quiz-q">2. كم حقلاً في ملف /etc/shadow؟</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q2', 'a')">
+              a) 7 حقول
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q2', 'b')">
+              b) 8 حقول
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q2', 'c')">
+              c) 9 حقول ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q2', 'd')">
+              d) 6 حقول
+            </button>
+          </div>
+          <div class="quiz-explain" id="q2-exp">
+            shadow = 9 حقول | passwd = 7 حقول | group = 4 حقول
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card" id="q3">
+          <div class="quiz-q">3. ما الفرق بين &gt; و &gt;&gt; ؟</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q3', 'a')">
+              a) لا فرق بينهما
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q3', 'b')">
+              b) &gt; يكتب ويمسح القديم، &gt;&gt; يضيف للموجود ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q3', 'c')">
+              c) &gt;&gt; يمسح، &gt; يضيف
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q3', 'd')">
+              d) كلاهما يضيف للموجود
+            </button>
+          </div>
+          <div class="quiz-explain" id="q3-exp">
+            &gt; يستبدل الملف كاملاً | &gt;&gt; يضيف في نهاية الملف الموجود
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card" id="q4">
+          <div class="quiz-q">
+            4. ما قيمة umask 026 على الملفات؟ (الافتراضي 666)
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q4', 'a')">
+              a) 640 ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q4', 'b')">
+              b) 751
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q4', 'c')">
+              c) 644
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q4', 'd')">
+              d) 660
+            </button>
+          </div>
+          <div class="quiz-explain" id="q4-exp">
+            666 - 026 = 640 (rw-r-----) | User: rw | Group: r | Other: لا شيء
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card" id="q5">
+          <div class="quiz-q">5. الحقل السادس في /etc/passwd هو؟</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q5', 'a')">
+              a) نوع shell
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q5', 'b')">
+              b) المجلد الرئيسي (home directory) ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q5', 'c')">
+              c) التعليق
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q5', 'd')">
+              d) GID
+            </button>
+          </div>
+          <div class="quiz-explain" id="q5-exp">
+            passwd: username:pass:UID:GID:comment:HOME:shell | الحقل 6 = home |
+            الحقل 7 = shell
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card" id="q6">
+          <div class="quiz-q">
+            6. ما الخيار الذي يُنشئ المجلد الرئيسي تلقائياً عند useradd؟
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q6', 'a')">
+              a) -d
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q6', 'b')">
+              b) -m ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q6', 'c')">
+              c) -G
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q6', 'd')">
+              d) -s
+            </button>
+          </div>
+          <div class="quiz-explain" id="q6-exp">
+            -m = make home | -d = تحديد مسار المجلد | -G = المجموعة الإضافية |
+            -s = نوع shell
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-card" id="q7">
+          <div class="quiz-q">
+            7. ما الأمر الصحيح لإنشاء مجلدات X/one/two دفعة واحدة؟
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q7', 'a')">
+              a) mkdir X/one/two
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q7', 'b')">
+              b) mkdir -p X/one/two ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q7', 'c')">
+              c) mkdir -r X/one/two
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q7', 'd')">
+              d) mkdir -v X/one/two
+            </button>
+          </div>
+          <div class="quiz-explain" id="q7-exp">
+            -p تُنشئ المجلدات الأب إذا لم تكن موجودة | بدون -p سيفشل إذا لم يكن
+            X موجوداً
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-card" id="q8">
+          <div class="quiz-q">8. grep "^[a-f]" file — ماذا يبحث؟</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q8', 'a')">
+              a) عن أسطر تنتهي بحرف من a إلى f
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q8', 'b')">
+              b) عن أسطر تبدأ بحرف من a إلى f ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q8', 'c')">
+              c) عن الكلمة [a-f] حرفياً
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q8', 'd')">
+              d) عن أي حرف بين a و f في أي مكان
+            </button>
+          </div>
+          <div class="quiz-explain" id="q8-exp">
+            ^ = بداية السطر | [a-f] = أي حرف من a إلى f | الاثنان معاً = سطر
+            يبدأ بحرف من a إلى f
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="quiz-card" id="q9">
+          <div class="quiz-q">9. ما الأمر الصحيح لحذف مجلد مع كل محتوياته؟</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q9', 'a')">
+              a) rmdir -p dir
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q9', 'b')">
+              b) rm dir
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q9', 'c')">
+              c) rm -r dir ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q9', 'd')">
+              d) rmdir -r dir
+            </button>
+          </div>
+          <div class="quiz-explain" id="q9-exp">
+            rm -r = حذف متعدد المستويات | rmdir = للمجلدات الفارغة فقط | rm بدون
+            -r = للملفات فقط
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="quiz-card" id="q10">
+          <div class="quiz-q">
+            10. chmod 755 — ما الصلاحيات الممنوحة للمجموعة؟
+          </div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(this, 'q10', 'a')">
+              a) rwx
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q10', 'b')">
+              b) r-x ✓
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q10', 'c')">
+              c) rw-
+            </button>
+            <button class="quiz-opt" onclick="answer(this, 'q10', 'd')">
+              d) r--
+            </button>
+          </div>
+          <div class="quiz-explain" id="q10-exp">
+            755: User=7(rwx) | Group=5(r-x) | Other=5(r-x) | 5 = 4+1 = r-x
+            (قراءة + تنفيذ)
+          </div>
+        </div>
+
+        <div id="quizResult" style="display: none" class="card">
+          <div class="card-title">🎉 نتيجتك</div>
+          <div
+            id="resultText"
+            style="
+              font-size: 1.2rem;
+              font-weight: 700;
+              text-align: center;
+              padding: 20px;
+            "
+          ></div>
+          <button
+            onclick="resetQuiz()"
+            style="
+              background: var(--purple-dim);
+              border: 1px solid var(--purple);
+              color: var(--purple);
+              padding: 10px 24px;
+              border-radius: 8px;
+              cursor: pointer;
+              font-family: Cairo, sans-serif;
+              font-size: 1rem;
+              width: 100%;
+              margin-top: 12px;
+            "
+          >
+            🔄 إعادة الاختبار
+          </button>
+        </div>
+      </div>
+      <footer class="footer">
+        <div class="footer-logo"><i class="fab fa-linux"></i> Linux OS</div>
+        <p class="footer-text">منصة تعليمية متكاملة لنظم التشغيل Linux</p>
+        <div class="footer-designer"><span>Designed by Hamza Omar</span></div>
+        <p style="color: var(--text-dim); margin-top: 1rem; font-size: 0.9rem">
+          <i class="fas fa-copyright"></i> 2026 جميع الحقوق محفوظة
         </p>
-      </div>
-
-      <div class="cards-grid">
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-compass"></i></div>
-          <h3>1. أوامر الاستكشاف والمسارات والمجلدات</h3>
-          <p>التحرك داخل شجرة النظام عبر الأوامر الصارمة التالية:</p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>عرض المسار الحالي</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>pwd</code></pre>
-          </div>
-          <p>
-            يطبع المسار المطلق الكامل للمجلد الذي يقف عليه المستخدم حالياً بدءاً
-            من الجَذر <code>/</code>.
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>تغيير المجلد والانتقال</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>cd /etc
-cd ..</code></pre>
-          </div>
-          <p>
-            <strong>شروط التمرير:</strong> الانتقال بالمسار المطلق (Absolute
-            Path) يتطلب البدء بالرمز <code>/</code> دائماً من الجذر مثل
-            <code>cd /etc</code>. الانتقال بالمسار النسبي (Relative Path) يتحرك
-            من النقطة الحالية دون خط مائل في البداية. الرمز <code>..</code> ينقل
-            المستخدم مرتبة واحدة للأعلى نحو المجلد الأب.
-          </p>
-
-          <div class="info-box danger">
-            <i class="fas fa-bug"></i>
-            <strong>معالجة خطأ المقرر الشهير:</strong> رسالة الخطأ
-            <code>bad directory</code> تعني برمجياً عدم إمكانية الانتقال للمجلد
-            المطلوب؛ لسببين: إما أن اسم المجلد غير موجود نهائياً، أو أن المستخدم
-            ارتكب خطأ في صياغة وقواعد كتابة المسار (خلط بين المطلق والنسبي).
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-list-ul"></i></div>
-          <h3>2. أوامر سرد واستعراض المحتويات وتفاصيلها</h3>
-          <p>
-            أمر <code>ls</code> مضافاً إليه خيارات التشغيل لفرز المجلدات
-            والخصائص الأكاديمية:
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>قائمة الملفات والخيارات</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>ls -l
-ls -a</code></pre>
-          </div>
-          <ul>
-            <li>
-              <strong>الخيار <code>-l</code> (Long Listing):</strong> يظهر
-              تفاصيل الملفات المتقدمة: نوع الملف والصلاحيات (rwx)، عدد الروابط،
-              اسم المالك، اسم المجموعة المالكة، حجم الملف بالبايت، وتاريخ ووقت
-              آخر تعديل.
-            </li>
-            <li>
-              <strong>الخيار <code>-a</code> (All Files):</strong> يظهر كافة
-              الملفات بدون استثناء، بما في ذلك الملفات والمجلدات المخفية والتي
-              تبدأ أسماؤها بنقطة (<code>.</code>).
-            </li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-file-code"></i></div>
-          <h3>3. المعالجة التطبيقية للملفات النصية (cat والتوجيه)</h3>
-          <p>
-            استخدامات أمر <code>cat</code> المتقدمة في دمج وتوجيه وإنشاء المحتوى
-            النصي الفوري:
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>استخدامات الأمر cat المتعددة</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>cat file1.txt
-cat > newfile.txt
-cat file1.txt file2.txt > combined.txt
-cat file1.txt >> existingfile.txt</code></pre>
-          </div>
-          <h4>القواعد البرمجية الصارمة للتوجيه المذكورة في المحاضرات:</h4>
-          <ul>
-            <li>
-              <code>cat file1.txt</code> لطباعة وعرض محتويات الملف مباشرة على
-              الشاشة (stdout).
-            </li>
-            <li>
-              <code>cat > newfile.txt</code> ينشئ ملفاً جديداً ويفتح السطر
-              للكتابة الحية من لوحة المفاتيح. للخروج وحفظ النص، يضغط المستخدم
-              على <strong>Ctrl + D</strong> أو <strong>Ctrl + Q</strong> (حسب
-              إعدادات النظام المحاكي).
-            </li>
-            <li>
-              الرمز <code>></code> يوجه البيانات لملف جديد، وإذا كان الملف
-              موجوداً فإنه يقوم بمسح محتوياته السابقة بالكامل (Overwrite).
-            </li>
-            <li>
-              الرمز <code>>></code> يقوم بإلحاق وإضافة النص الموجه الجديد إلى
-              نهاية الملف القائم دون تدمير أو مسح محتوياته القديمة.
-            </li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-user-shield"></i></div>
-          <h3>4. أوامر تعديل صلاحيات الأمان برمزيتها وأرقامها</h3>
-          <p>
-            تطبيق أمر <code>chmod</code> لتعديل مصفوفة الحماية بالأسلوبين الرقمي
-            والرمزي:
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>تطبيق chmod بالخيارات</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>chmod 755 script.sh
-chmod u+x,g-w document.txt
-chmod -R 777 /shared_folder</code></pre>
-          </div>
-          <h4>تحليل الصيغة المعتمدة في المقرر:</h4>
-          <ul>
-            <li>
-              <strong>النظام الرقمي (Octal):</strong> الأمر
-              <code>chmod 755</code> يعني منح المالك صلاحية كاملة (4+2+1=7)،
-              ومنح المجموعة صلاحية قراءة وتنفيذ (4+1=5)، ومنح الآخرين صلاحية
-              قراءة وتنفيذ (4+1=5).
-            </li>
-            <li>
-              <strong>النظام الرمزي (Symbolic):</strong> الصياغة
-              <code>u+x</code> تعني إضافة صلاحية التنفيذ للمالك، و
-              <code>g-w</code> تعني سحب وإلغاء صلاحية الكتابة من المجموعة.
-            </li>
-            <li>
-              <strong
-                >الخيار التكراري الهام <code>-R</code> (Recursive):</strong
-              >
-              يقوم بتغيير صلاحيات المجلد المستهدف بشكل تنازلي ليشمل المجلد نفسه
-              وكافة الملفات والمجلدات الفرعية المتفرعة منه بالداخل.
-            </li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-user-plus"></i></div>
-          <h3>5. أوامر إدارة وحذف حسابات المستخدمين بالخيارات</h3>
-          <p>
-            إدارة دورة حياة الحسابات في النظام (تتطلب صلاحية المسؤول الإداري
-            الأعلى الـ root) عبر المسار الإداري القياسي <code>/usr/sbin/</code>:
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>إنشاء وحذف المستخدمين</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>/usr/sbin/useradd engineering_user
-/usr/sbin/userdel -r engineering_user
-passwd engineering_user</code></pre>
-          </div>
-          <ul>
-            <li>
-              <strong><code>/usr/sbin/useradd</code>:</strong> يقوم بإنشاء حساب
-              مستخدم جديد كلياً في النظام، وبناء سطر خاص به في ملفات الهوية
-              والمجلدات الشخصية تلقائياً.
-            </li>
-            <li>
-              <strong><code>/usr/sbin/userdel -r</code>:</strong> حذف حساب
-              المستخدم. <strong>الشرط الأكاديمي الحرج:</strong> استخدام الخيار
-              <code>-r</code> إلزامي لإجبار النظام على حذف المجلد الشخصي
-              للمستخدم (Home Directory) ومجلد بريده الإلكتروني بالكامل من القرص؛
-              وإلا بقي المجلد معلقاً في النظام بدون مالك.
-            </li>
-            <li>
-              <strong><code>passwd [username]</code>:</strong> تعيين أو تحديث
-              كلمة المرور للحساب. عند تنفيذه، يطلب الشل إدخال الكلمة مرتين بشكل
-              مخفي تماماً لأسباب أمنية لمنع المتطفلين من معرفة عدد أحرفها.
-            </li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-users"></i></div>
-          <h3>6. الأوامر البرمجية الكاملة لإدارة وتعديل المجموعات</h3>
-          <p>
-            التحكم الكامل بإنشاء، هيكلة، وحذف المجموعات وإلحاق المستخدمين بها
-            عملياً:
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>صياغات أوامر المجموعات</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>/usr/sbin/groupadd network_group
-/usr/sbin/groupmod -n new_network_group network_group
-/usr/sbin/groupdel new_network_group
-gpasswd -a engineering_user new_network_group
-gpasswd -d engineering_user new_network_group</code></pre>
-          </div>
-          <ul>
-            <li>
-              <strong><code>groupadd</code>:</strong> لإنشاء مجموعة أمان جديدة
-              فارغة داخل ملف <code>/etc/group</code>.
-            </li>
-            <li>
-              <strong
-                ><code>groupmod -n [الاسم_الجديد] [الاسم_القديم]</code>:</strong
-              >
-              الخيار <code>-n</code> مخصص لتعديل وإعادة تسمية المجموعة الحالية
-              دون التأثير على الـ GID الرقمي الخاص بها.
-            </li>
-            <li>
-              <strong><code>groupdel</code>:</strong> حذف مجموعة من النظام.
-              <strong>شرط التشغيل:</strong> يفشل هذا الأمر إذا كانت المجموعة
-              المستهدفة هي المجموعة الأساسية (Primary Group) لمستخدم لا يزال
-              نشطاً في النظام.
-            </li>
-            <li>
-              <strong>أمر التحكم بالعضوية <code>gpasswd</code>:</strong> الخيار
-              <code>-a</code> يقوم بإضافة وإسناد مستخدم معين إلى المجموعة
-              كمجموعة ثانوية، بينما الخيار <code>-d</code> يقوم بحذف وإخراج
-              المستخدم المحدد من عضوية هذه المجموعة نهائياً.
-            </li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <div class="card-icon"><i class="fas fa-filter"></i></div>
-          <h3>7. الفلترة المتقدمة عبر الأنابيب (Pipeline) وأوامر النصوص</h3>
-          <p>
-            الربط المعقد بين مخرجات ومدخلات البرامج لتصفية نصوص السجلات الكبيرة
-            فوريّاً:
-          </p>
-
-          <div class="code-container">
-            <div class="code-header">
-              <span>دمج الأوامر والترتيب والفلترة</span
-              ><button class="copy-btn" onclick="copyCode(this)">
-                <i class="fas fa-copy"></i> نسخ
-              </button>
-            </div>
-            <pre><code>cat /etc/passwd | grep "root"
-ls -l /etc | sort
-ls -l /bin | grep "sh" | sort</code></pre>
-          </div>
-          <h4>شرح وتقسيم أدوات التصفية الواردة بالملفات:</h4>
-          <ul>
-            <li>
-              <strong>الرمز <code>|</code> (Pipeline / الأنبوب):</strong> يقوم
-              بنقل مخرجات الإخراج القياسي (stdout) للأمر الأول الأيسر ليصبح
-              مدخلاً قياسياً (stdin) للأمر التالي الأيمن بشكل فوري دون الحاجة
-              لإنشاء ملفات وسيطة على القرص.
-            </li>
-            <li>
-              <strong>أمر <code>grep</code>:</strong> يقوم بفحص الأسطر الممررة
-              إليه طبقة طبقة، ولا يطبع على الشاشة إلا الأسطر التي تحتوي بدقة على
-              الكلمة المفتاحية المستهدفة (مثل تصفية سطور الـ root).
-            </li>
-            <li>
-              <strong>أمر <code>sort</code>:</strong> يقوم باستقبال البيانات
-              النصية وإعادة ترتيب أسطرها أبجدياً أو رقمياً لتسهيل القراءة
-              والمراقبة الإدارية.
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <footer class="footer">
-      <div class="footer-logo"><i class="fab fa-linux"></i> Linux OS</div>
-      <p class="footer-text">منصة تعليمية متكاملة لنظم التشغيل Linux</p>
-      <div class="footer-designer"><span>Designed by Hamza Omar</span></div>
-      <p style="color: var(--text-dim); margin-top: 1rem; font-size: 0.9rem">
-        <i class="fas fa-copyright"></i> 2026 جميع الحقوق محفوظة
-      </p>
-    </footer>
+      </footer>
+    </main>
 
     <script>
-      // إعداد خلفية تفاعلية ثلاثية الأبعاد متحركة مع حركة الفأرة والتمرير باستخدام Three.js
-      const container = document.getElementById("canvas-container");
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(
-        75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000,
-      );
-      const renderer = new THREE.WebGLRenderer({
-        alpha: true,
-        antialias: true,
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      container.appendChild(renderer.domElement);
-
-      const geometry = new THREE.BufferGeometry();
-      const vertices = [];
-      // توليد 2000 نقطة ضوئية لخلق عمق بصري احترافي
-      for (let i = 0; i < 2000; i++) {
-        vertices.push(THREE.MathUtils.randFloatSpread(2000));
-        vertices.push(THREE.MathUtils.randFloatSpread(2000));
-        vertices.push(THREE.MathUtils.randFloatSpread(2000));
-      }
-      geometry.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(vertices, 3),
-      );
-      const material = new THREE.PointsMaterial({
-        color: 0x00d4ff,
-        size: 2.5,
-        transparent: true,
-        opacity: 0.5,
-      });
-      const points = new THREE.Points(geometry, material);
-      scene.add(points);
-      camera.position.z = 600;
-
-      function animate() {
-        requestAnimationFrame(animate);
-        points.rotation.x += 0.0004;
-        points.rotation.y += 0.0006;
-        renderer.render(scene, camera);
-      }
-      animate();
-
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      // تحويل شكل شريط التنقل عند تمرير الشاشة للأسفل
-      window.addEventListener("scroll", () => {
-        const navbar = document.querySelector(".navbar");
-        if (window.scrollY > 60) {
-          navbar.classList.add("scrolled");
-        } else {
-          navbar.classList.remove("scrolled");
-        }
-      });
-
-      // وظيفة نسخ الأوامر البرمجية بدقة وبدون تداخل نصي مع حماية المحتوى
-      function copyCode(btn) {
-        const codeBlock =
-          btn.parentElement.nextElementSibling.querySelector("code");
-        const text = codeBlock.innerText;
-        navigator.clipboard
-          .writeText(text)
-          .then(() => {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML =
-              '<i class="fas fa-check" style="color: var(--success)"></i> تم النسخ بنجاح';
-            setTimeout(() => {
-              btn.innerHTML = originalHTML;
-            }, 2000);
-          })
-          .catch((err) => {
-            console.error("فشل النسخ: ", err);
-          });
+      // TAB SWITCHING
+      function showTab(id) {
+        document
+          .querySelectorAll(".section")
+          .forEach((s) => s.classList.remove("active"));
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        event.target.classList.add("active");
+        window.scrollTo(0, 0);
       }
 
-      // الانتقال الانسيابي الهادئ بين أقسام الصفحة المختلفة عند النقر
-      document
-        .querySelectorAll(".nav-links a, .hero-buttons a")
-        .forEach((anchor) => {
-          anchor.addEventListener("click", function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute("href");
-            if (targetId.startsWith("#")) {
-              const target = document.querySelector(targetId);
-              if (target) {
-                target.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-            }
-          });
+      // SEARCH COMMANDS
+      function searchCommands(val) {
+        const items = document.querySelectorAll("#cmdList .cmd-item");
+        const v = val.toLowerCase();
+        items.forEach((item) => {
+          const text = item.textContent.toLowerCase();
+          item.style.display = text.includes(v) ? "flex" : "none";
         });
+        document
+          .querySelectorAll("#cmdList h3")
+          .forEach((h) => (h.style.display = val ? "none" : ""));
+      }
 
-      // توليد تأثير جزيئات ضوئية متلاشية (Particle Sparkles) عند النقر بالفأرة في أي مكان على الصفحة
-      document.addEventListener("click", (e) => {
-        for (let i = 0; i < 6; i++) {
-          const particle = document.createElement("div");
-          particle.className = "particle";
-          particle.style.left = e.clientX + "px";
-          particle.style.top = e.clientY + "px";
-          particle.style.background =
-            Math.random() > 0.5 ? "var(--primary)" : "var(--secondary)";
-          document.body.appendChild(particle);
-          gsap.to(particle, {
-            x: (Math.random() - 0.5) * 120,
-            y: (Math.random() - 0.5) * 120,
-            opacity: 0,
-            scale: 0,
-            duration: 1.2,
-            ease: "power3.out",
-            onComplete: () => particle.remove(),
-          });
-        }
-      });
+      // QUIZ
+      const correctAnswers = {
+        q1: "b",
+        q2: "c",
+        q3: "b",
+        q4: "a",
+        q5: "b",
+        q6: "b",
+        q7: "b",
+        q8: "b",
+        q9: "c",
+        q10: "b",
+      };
+      let answered = {};
+      let score = 0;
 
-      // تفعيل تأثيرات التحريك المتقدمة لعناصر الموقع (Cards) عند التمرير لأسفل عبر مكتبة GSAP التفاعلية
-      gsap.registerPlugin(ScrollTrigger);
-      gsap.utils.toArray(".card").forEach((card) => {
-        gsap.from(card, {
-          scrollTrigger: {
-            trigger: card,
-            start: "top 88%",
-            toggleActions: "play none none none",
-          },
-          opacity: 0,
-          y: 40,
-          duration: 0.7,
-          ease: "power2.out",
+      function answer(btn, qid, choice) {
+        if (answered[qid]) return;
+        answered[qid] = true;
+        const correct = correctAnswers[qid];
+        const opts = btn.closest(".quiz-options").querySelectorAll(".quiz-opt");
+        opts.forEach((o) => {
+          o.style.pointerEvents = "none";
+          const c = o.getAttribute("onclick").match(/'([a-d])'\)$/)[1];
+          if (c === correct) o.classList.add("correct");
+          else if (c === choice && choice !== correct) o.classList.add("wrong");
         });
-      });
+        if (choice === correct) score++;
+        document.getElementById(qid + "-exp").style.display = "block";
+        const total = Object.keys(correctAnswers).length;
+        document.getElementById("quizScore").textContent =
+          score + " / " + total;
+        document.getElementById("quizProgress").style.width =
+          (Object.keys(answered).length / total) * 100 + "%";
+        if (Object.keys(answered).length === total) showResult();
+      }
+
+      function showResult() {
+        const total = Object.keys(correctAnswers).length;
+        const pct = Math.round((score / total) * 100);
+        let msg =
+          pct >= 80
+            ? "🎉 ممتاز! جاهز للامتحان!"
+            : pct >= 60
+              ? "👍 جيد — راجع النقاط التي أخطأت فيها"
+              : "💪 راجع المحاضرات مرة أخرى";
+        const col =
+          pct >= 80
+            ? "var(--green)"
+            : pct >= 60
+              ? "var(--yellow)"
+              : "var(--red)";
+        document.getElementById("resultText").innerHTML =
+          `<span style="color:${col};font-size:2rem">${score}/${total}</span><br>${msg}`;
+        document.getElementById("quizResult").style.display = "block";
+      }
+
+      function resetQuiz() {
+        answered = {};
+        score = 0;
+        document.getElementById("quizScore").textContent = "0 / 10";
+        document.getElementById("quizProgress").style.width = "0%";
+        document.getElementById("quizResult").style.display = "none";
+        document.querySelectorAll(".quiz-opt").forEach((o) => {
+          o.classList.remove("correct", "wrong");
+          o.style.pointerEvents = "";
+        });
+        document
+          .querySelectorAll(".quiz-explain")
+          .forEach((e) => (e.style.display = "none"));
+      }
     </script>
   </body>
 </html>
